@@ -76,16 +76,24 @@ fun CameraPreview(
     }
     val cameraProvider = remember { cameraProviderFuture.get() }
 
-    val previewView = PreviewView(context).apply {
-        implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-    }
-    val preview = Preview.Builder()
-        .setTargetRotation(previewView.display?.rotation ?: 0)
-        .build().also {
-            it.setSurfaceProvider(previewView.surfaceProvider)
+    val previewView = remember {
+        PreviewView(context).apply {
+            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
         }
+    }
 
-    val imageCapture = ImageCapture.Builder().build()
+    val preview = remember {
+        Preview.Builder()
+            .setTargetRotation(previewView.display?.rotation ?: 0)
+            .build().also {
+                it.setSurfaceProvider(previewView.surfaceProvider)
+            }
+    }
+
+    val imageCapture = remember {
+        ImageCapture.Builder().build()
+    }
+
 
 
     // TODO: fix the problem with camera bounding after coming back from DisplayImageActivity
@@ -122,7 +130,7 @@ fun CameraPreview(
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
-                .graphicsLayer { alpha = alphaAnimation.value},
+                .graphicsLayer { alpha = alphaAnimation.value },
             factory = { ctx ->
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
