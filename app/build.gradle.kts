@@ -50,6 +50,15 @@ android {
 }
 
 dependencies {
+    implementation(libs.tensorflow.lite)
+    implementation(libs.tensorflow.lite.task.vision)
+
+    implementation(libs.androidx.camera.core.v130rc01)
+    implementation(libs.androidx.camera.camera2.v130rc01)
+    implementation(libs.androidx.camera.lifecycle.v130rc01)
+    implementation(libs.androidx.camera.video.v130rc01)
+    implementation(libs.androidx.camera.view.v130rc01)
+    implementation(libs.androidx.camera.extensions.v130rc01)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,6 +68,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
