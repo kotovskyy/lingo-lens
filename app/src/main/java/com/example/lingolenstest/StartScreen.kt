@@ -38,6 +38,7 @@ fun CenteredButton(text: String, onClick: () -> Unit){
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreenTopBar(title: String){
@@ -51,6 +52,7 @@ fun StartScreenTopBar(title: String){
         modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
     )
 }
+
 
 @Composable
 fun StartScreen(navController: NavController?){

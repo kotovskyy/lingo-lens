@@ -3,7 +3,6 @@ package com.example.lingolenstest
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import androidx.camera.core.CameraSelector
@@ -14,14 +13,12 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -50,18 +45,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
-import kotlinx.coroutines.CoroutineScope
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.coroutines.CoroutineContext
+
 
 @Composable
-fun CameraPreview(
-    modifier: Modifier
-){
+fun CameraPreview(){
     var isImageBeingCaptured by remember { mutableStateOf(false) }
 
     val alphaAnimation = remember { Animatable(1f) }
@@ -69,11 +60,10 @@ fun CameraPreview(
 
     val context = LocalContext.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
     val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
-    var cameraSelector by remember {
-        mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA)
-    }
+    var cameraSelector by remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
     val cameraProvider = remember { cameraProviderFuture.get() }
 
     val previewView = remember {
@@ -90,13 +80,7 @@ fun CameraPreview(
             }
     }
 
-    val imageCapture = remember {
-        ImageCapture.Builder().build()
-    }
-
-
-
-    // TODO: fix the problem with camera bounding after coming back from DisplayImageActivity
+    val imageCapture = remember { ImageCapture.Builder().build() }
 
     // Update animation when `isImageBeingCaptured` changes
     LaunchedEffect(isImageBeingCaptured) {
@@ -198,6 +182,28 @@ fun CameraPreview(
     }
 }
 
+
+@Composable
+fun CameraButton(
+    onClick: () -> Unit,
+    iconID: Int,
+    description: String = ""
+) {
+    IconButton(
+        modifier = Modifier
+            .padding(10.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.primary),
+        onClick = { onClick() })
+    {
+        Icon(
+            painter = painterResource(id = iconID),
+            contentDescription = description
+        )
+    }
+}
+
+
 fun takePhoto(
     context: Context,
     imageCapture: ImageCapture,
@@ -242,6 +248,7 @@ fun takePhoto(
         }
     )
 }
+
 
 fun scaleCapturedImage(bitmap: Bitmap, viewFinder: View): Bitmap {
     // Get the dimensions of the View (Preview)
@@ -294,25 +301,5 @@ fun createTempImageFile(context: Context, bitmap: Bitmap): File? {
     } catch (e: Exception) {
         e.printStackTrace()
         null
-    }
-}
-
-@Composable
-fun CameraButton(
-    onClick: () -> Unit,
-    iconID: Int,
-    description: String = ""
-) {
-    IconButton(
-        modifier = Modifier
-            .padding(10.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(MaterialTheme.colorScheme.primary),
-        onClick = { onClick() })
-    {
-        Icon(
-            painter = painterResource(id = iconID),
-            contentDescription = description
-        )
     }
 }

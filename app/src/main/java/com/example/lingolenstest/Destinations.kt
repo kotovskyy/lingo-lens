@@ -3,10 +3,12 @@ package com.example.lingolenstest
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 
+
 interface Destination{
     val route: String
     val screen: @Composable (NavController) -> Unit
 }
+
 
 object Home: Destination {
     override val route = "home"
