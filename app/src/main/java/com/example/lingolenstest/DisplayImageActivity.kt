@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -25,6 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.capitalize
 import androidx.core.app.ActivityCompat
 import com.example.lingolenstest.ui.theme.LingoLensTestTheme
+import kotlin.math.max
+import kotlin.math.min
 
 class DisplayImageActivity: ComponentActivity() {
 
@@ -33,12 +36,15 @@ class DisplayImageActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val imageUri = intent.getStringExtra("image_uri")
+        val confidenceThreshold = intent.getFloatExtra("confidence_threshold", 0.5f)
+        val iouThreshold = intent.getFloatExtra("iou_threshold", 0.5f)
+
 
         yoloAPI = YoloAPI(
             context = this,
             modelFilename = "yolov5.tflite",
-            confidenceThreshold = 0.5f,
-            iouThreshold = 0.5f
+            confidenceThreshold = confidenceThreshold,
+            iouThreshold = iouThreshold
         )
 
         setContent {
@@ -75,6 +81,9 @@ class DisplayImageActivity: ComponentActivity() {
     }
 
     private fun drawBoundingBoxes(bitmap: Bitmap, boxes: List<BoundingBox>) : Bitmap {
+        val maxWidth = bitmap.width-10
+        val maxHeight = bitmap.height-10
+
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(mutableBitmap)
         val paint = Paint().apply {
@@ -91,11 +100,13 @@ class DisplayImageActivity: ComponentActivity() {
         }
 
         for (box in boxes) {
-            val minX = box.centerX * bitmap.width - box.width*bitmap.width/2
-            val minY = box.centerY * bitmap.height - box.height*bitmap.height/2
-            val maxX = box.centerX * bitmap.width + box.width*bitmap.width/2
-            val maxY = box.centerY * bitmap.height + box.height*bitmap.height/2
+            val minX = max(box.centerX * bitmap.width - box.width*bitmap.width/2, 0f)
+            val minY = max(box.centerY * bitmap.height - box.height*bitmap.height/2, 0f)
+            val maxX = min(box.centerX * bitmap.width + box.width*bitmap.width/2, maxWidth.toFloat())
+            val maxY = min(box.centerY * bitmap.height + box.height*bitmap.height/2, maxHeight.toFloat())
 
+            Log.d("Width", "Max X: ${box.centerX * bitmap.width + box.width*bitmap.width/2}, bmWidth: ${maxWidth.toFloat()}")
+            Log.d("Result", "maxX = $maxX")
 
             val label = Labels.LABELS.get(box.classID) ?: "Unknown"
             val confidence = String.format("%.2f", box.confidence)

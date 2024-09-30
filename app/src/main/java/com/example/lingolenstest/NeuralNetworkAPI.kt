@@ -33,6 +33,8 @@ class YoloAPI(
     }
 
     fun analyze(bitmap: Bitmap) {
+
+
         val tensorImage = TensorImage.fromBitmap(bitmap)
         val processedImage = imageProcessor.process(tensorImage)
         Log.d("Processed tensor Image", "Width: ${processedImage.width} Height: ${processedImage.height} Colorspace: ${processedImage.colorSpaceType} Datatype: ${processedImage.dataType}")
