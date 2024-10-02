@@ -8,9 +8,11 @@ import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,10 +22,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.unit.toSize
 import androidx.core.app.ActivityCompat
 import com.example.lingolenstest.ui.theme.LingoLensTestTheme
 import kotlin.math.max
@@ -58,7 +65,9 @@ class DisplayImageActivity: ComponentActivity() {
                             yoloAPI.analyze(bitmap)
                             detectedBitmap = drawBoundingBoxes(bitmap, yoloAPI.boundingBoxes)
                         }
-                        DisplayImage(bitmap = detectedBitmap)
+                        DisplayImage(bitmap = detectedBitmap, yoloAPI.boundingBoxes) { bbox ->
+                            Toast.makeText(this.baseContext, "Clicked box ${Labels.LABELS.get(bbox.classID)}", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Text(text = "Couldn't open image")
                     }
@@ -105,9 +114,6 @@ class DisplayImageActivity: ComponentActivity() {
             val maxX = min(box.centerX * bitmap.width + box.width*bitmap.width/2, maxWidth.toFloat())
             val maxY = min(box.centerY * bitmap.height + box.height*bitmap.height/2, maxHeight.toFloat())
 
-            Log.d("Width", "Max X: ${box.centerX * bitmap.width + box.width*bitmap.width/2}, bmWidth: ${maxWidth.toFloat()}")
-            Log.d("Result", "maxX = $maxX")
-
             val label = Labels.LABELS.get(box.classID) ?: "Unknown"
             val confidence = String.format("%.2f", box.confidence)
 
@@ -122,11 +128,46 @@ class DisplayImageActivity: ComponentActivity() {
 }
 
 @Composable
-fun DisplayImage(bitmap: Bitmap){
+fun DisplayImage(bitmap: Bitmap, boxes: List<BoundingBox>, onBoxClicked: (BoundingBox) -> Unit){
+    var imageSize by remember { mutableStateOf(Size.Zero) }
+    // Sort the boxes by area (width * height) in ascending order
+    val sortedBoxes = boxes.sortedBy { box ->
+        val width = box.width * bitmap.width
+        val height = box.height * bitmap.height
+        width * height // Area of the bounding box
+    }
+
     Image(
         bitmap = bitmap.asImageBitmap(),
         contentDescription = "Captured Image",
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { tapOffset: Offset ->
+                        val maxWidth = bitmap.width
+                        val maxHeight = bitmap.height
+                        val bitmapYOffset = (imageSize.height - maxHeight)/2
+
+                        for (box in sortedBoxes) {
+                            val minX = max(box.centerX * bitmap.width - box.width * bitmap.width / 2, 0f)
+                            val minY = max(box.centerY * bitmap.height - box.height * bitmap.height / 2 + bitmapYOffset, 0f)
+
+                            val maxX = min(box.centerX * bitmap.width + box.width * bitmap.width / 2, maxWidth.toFloat())
+                            val maxY = min(box.centerY * bitmap.height + box.height * bitmap.height / 2 + bitmapYOffset, maxHeight.toFloat())
+
+                            if (tapOffset.x in minX..maxX && tapOffset.y in minY..maxY){
+                                onBoxClicked(box)
+                                break
+                            }
+                        }
+                    }
+                )
+            }
+            .onGloballyPositioned { layoutCoordinates ->
+            // Capture the size of the Image composable after it is rendered
+            imageSize = layoutCoordinates.size.toSize()
+        },
+        contentScale = ContentScale.Fit
     )
 }
