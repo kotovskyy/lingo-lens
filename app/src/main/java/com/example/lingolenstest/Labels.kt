@@ -66,7 +66,7 @@ object Labels {
         put(59, "bed")
         put(60, "dining table")
         put(61, "toilet")
-        put(62, "the tv")
+        put(62, "tv")
         put(63, "laptop")
         put(64, "mouse")
         put(65, "remote")
@@ -86,3 +86,4 @@ object Labels {
         put(79, "toothbrush")
     }
 }
+

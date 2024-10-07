@@ -32,20 +32,31 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.toSize
 import androidx.core.app.ActivityCompat
+import com.example.lingolenstest.translateAPI.LabelTranslationResponse
+import com.example.lingolenstest.translateAPI.TranslatorInstance
 import com.example.lingolenstest.ui.theme.LingoLensTestTheme
+import kotlinx.coroutines.coroutineScope
+import retrofit2.Call
+import retrofit2.Response
 import kotlin.math.max
 import kotlin.math.min
 
 class DisplayImageActivity: ComponentActivity() {
 
     private lateinit var yoloAPI: YoloAPI
+    private lateinit var selectedLanguageCode: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val imageUri = intent.getStringExtra("image_uri")
         val confidenceThreshold = intent.getFloatExtra("confidence_threshold", 0.5f)
         val iouThreshold = intent.getFloatExtra("iou_threshold", 0.5f)
+        val labelsTranslator = LabelTranslator(this)
 
+        val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        selectedLanguageCode = sharedPreferences.getString("selected_language", "en") ?: "en" // Default to English
+
+        Log.d("Selected language", "CODE: $selectedLanguageCode")
 
         yoloAPI = YoloAPI(
             context = this,
@@ -60,10 +71,18 @@ class DisplayImageActivity: ComponentActivity() {
                     val bitmap = loadImageFromUri(Uri.parse(imageUri))
                     if (bitmap != null) {
                         var detectedBitmap by remember { mutableStateOf(bitmap) }
+                        var translatedLabels by remember { mutableStateOf(emptyList<String>()) }
 
                         LaunchedEffect(Unit) {
                             yoloAPI.analyze(bitmap)
-                            detectedBitmap = drawBoundingBoxes(bitmap, yoloAPI.boundingBoxes)
+
+                            val boxes = yoloAPI.boundingBoxes
+
+
+                            translatedLabels = boxes.map {
+                                labelsTranslator.getTranslatedLabel(Labels.LABELS.get(it.classID), selectedLanguageCode)
+                            }
+                            detectedBitmap = drawBoundingBoxes(bitmap, yoloAPI.boundingBoxes, translatedLabels)
                         }
                         DisplayImage(bitmap = detectedBitmap, yoloAPI.boundingBoxes) { bbox ->
                             Toast.makeText(this.baseContext, "Clicked box ${Labels.LABELS.get(bbox.classID)}", Toast.LENGTH_SHORT).show()
@@ -89,7 +108,7 @@ class DisplayImageActivity: ComponentActivity() {
         }
     }
 
-    private fun drawBoundingBoxes(bitmap: Bitmap, boxes: List<BoundingBox>) : Bitmap {
+    private fun drawBoundingBoxes(bitmap: Bitmap, boxes: List<BoundingBox>, labels: List<String>) : Bitmap {
         val maxWidth = bitmap.width-10
         val maxHeight = bitmap.height-10
 
@@ -108,21 +127,21 @@ class DisplayImageActivity: ComponentActivity() {
             setShadowLayer(5f, 0f, 0f, android.graphics.Color.BLACK)  // Add shadow for better readability
         }
 
-        for (box in boxes) {
-            val minX = max(box.centerX * bitmap.width - box.width*bitmap.width/2, 0f)
-            val minY = max(box.centerY * bitmap.height - box.height*bitmap.height/2, 0f)
-            val maxX = min(box.centerX * bitmap.width + box.width*bitmap.width/2, maxWidth.toFloat())
-            val maxY = min(box.centerY * bitmap.height + box.height*bitmap.height/2, maxHeight.toFloat())
+        for (i in 0..<boxes.count()){
+            val minX = max(boxes[i].centerX * bitmap.width - boxes[i].width*bitmap.width/2, 0f)
+            val minY = max(boxes[i].centerY * bitmap.height - boxes[i].height*bitmap.height/2, 0f)
+            val maxX = min(boxes[i].centerX * bitmap.width + boxes[i].width*bitmap.width/2, maxWidth.toFloat())
+            val maxY = min(boxes[i].centerY * bitmap.height + boxes[i].height*bitmap.height/2, maxHeight.toFloat())
 
-            val label = Labels.LABELS.get(box.classID) ?: "Unknown"
-            val confidence = String.format("%.2f", box.confidence)
+            val label = labels[i]
+            val confidence = String.format("%.2f", boxes[i].confidence)
 
             val displayText = "$confidence $label"
 
             canvas.drawRect(minX, minY, maxX, maxY, paint)
             canvas.drawText(displayText, minX, minY-10, textPaint)
         }
-
+        
         return mutableBitmap
     }
 }

@@ -53,6 +53,13 @@ dependencies {
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.task.vision)
 
+    // retrofit for API requests
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
     implementation(libs.androidx.camera.core.v130rc01)
     implementation(libs.androidx.camera.camera2.v130rc01)
     implementation(libs.androidx.camera.lifecycle.v130rc01)

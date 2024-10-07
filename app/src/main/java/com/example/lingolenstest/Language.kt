@@ -9,10 +9,8 @@ val languages = listOf(
     Language("de", "German"),
     Language("it", "Italian"),
     Language("pl", "Polish"),
-    Language("ru", "Russian"),
-    Language("zh", "Chinese"),
-    Language("ja", "Japanese"),
-    Language("ko", "Korean"),
-    Language("pt", "Portuguese"),
-    Language("ar", "Arabic")
+    Language("ru", "Russian")
+//    Language("zh", "Chinese"),
+//    Language("ja", "Japanese"),
+//    Language("ko", "Korean")
 )
