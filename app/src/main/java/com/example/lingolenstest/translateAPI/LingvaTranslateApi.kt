@@ -8,7 +8,8 @@ import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-const val ROOT_URL = "https://lingva.ml/api/v1/"
+//const val ROOT_URL = "https://lingva.ml/api/v1/"
+const val ROOT_URL = "https://lingva-translate-eta.vercel.app/api/v1/" // mirror of the original API
 
 interface LingvaTranslateApi {
     @GET("{sourceLang}/{targetLang}/{text}")
@@ -16,7 +17,7 @@ interface LingvaTranslateApi {
         @Path("sourceLang") sourceLang: String,
         @Path("targetLang") targetLang: String,
         @Path("text") text: String
-    ): Response<LabelTranslationResponse>
+    ): Response<TranslationResponse>
 }
 
 object TranslatorInstance {

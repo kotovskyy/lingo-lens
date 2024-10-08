@@ -68,7 +68,7 @@ object Labels {
         put(61, "toilet")
         put(62, "tv")
         put(63, "laptop")
-        put(64, "mouse")
+        put(64, "computer mouse")
         put(65, "remote")
         put(66, "keyboard")
         put(67, "cell phone")

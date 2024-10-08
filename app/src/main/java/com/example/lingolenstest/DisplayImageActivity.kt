@@ -8,11 +8,11 @@ import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -28,16 +29,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.toSize
-import androidx.core.app.ActivityCompat
-import com.example.lingolenstest.translateAPI.LabelTranslationResponse
-import com.example.lingolenstest.translateAPI.TranslatorInstance
 import com.example.lingolenstest.ui.theme.LingoLensTestTheme
-import kotlinx.coroutines.coroutineScope
-import retrofit2.Call
-import retrofit2.Response
 import kotlin.math.max
 import kotlin.math.min
 
@@ -72,6 +65,9 @@ class DisplayImageActivity: ComponentActivity() {
                     if (bitmap != null) {
                         var detectedBitmap by remember { mutableStateOf(bitmap) }
                         var translatedLabels by remember { mutableStateOf(emptyList<String>()) }
+                        var showTranslationCard by remember { mutableStateOf(false) }
+                        var selectedBoundingBox by remember { mutableStateOf<BoundingBox?>(null) }
+
 
                         LaunchedEffect(Unit) {
                             yoloAPI.analyze(bitmap)
@@ -84,9 +80,28 @@ class DisplayImageActivity: ComponentActivity() {
                             }
                             detectedBitmap = drawBoundingBoxes(bitmap, yoloAPI.boundingBoxes, translatedLabels)
                         }
-                        DisplayImage(bitmap = detectedBitmap, yoloAPI.boundingBoxes) { bbox ->
-                            Toast.makeText(this.baseContext, "Clicked box ${Labels.LABELS.get(bbox.classID)}", Toast.LENGTH_SHORT).show()
+                        Box(
+                            contentAlignment = Alignment.Center
+                        ){
+                            DisplayImage(bitmap = detectedBitmap, yoloAPI.boundingBoxes) { bbox ->
+                                selectedBoundingBox = bbox
+                                showTranslationCard = true
+                            }
+
+                            // Show the TranslationCard when a bounding box is clicked
+                            if (showTranslationCard && (selectedBoundingBox != null)) {
+                                Log.d("CARD CREATION", "${selectedBoundingBox!!.classID}")
+                                TranslationCard(
+                                    word = labelsTranslator.getTranslatedLabel(Labels.LABELS.get(selectedBoundingBox!!.classID), selectedLanguageCode),
+                                    sourceLangCode = selectedLanguageCode,
+                                    onClose = {
+                                        showTranslationCard = false
+                                        selectedBoundingBox = null
+                                    }
+                                )
+                            }
                         }
+
                     } else {
                         Text(text = "Couldn't open image")
                     }

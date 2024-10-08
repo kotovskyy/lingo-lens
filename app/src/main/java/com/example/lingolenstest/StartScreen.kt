@@ -88,7 +88,7 @@ fun StartScreen(navController: NavController?){
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                LanguagePicker(selectedLanguage) { language ->
+                LanguagePicker("Selected language:", selectedLanguage) { language ->
                     saveSelectedLanguage(context, language.code)
                 }
                 CenteredButton(
@@ -101,7 +101,7 @@ fun StartScreen(navController: NavController?){
 }
 
 @Composable
-fun LanguagePicker(defaultLanguage: Language, onLanguageSelected: (Language) -> Unit){
+fun LanguagePicker(text: String, defaultLanguage: Language, onLanguageSelected: (Language) -> Unit){
     var expanded by remember { mutableStateOf(false) }
     var selectedLanguage by remember { mutableStateOf(defaultLanguage) }
 
@@ -109,8 +109,11 @@ fun LanguagePicker(defaultLanguage: Language, onLanguageSelected: (Language) -> 
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("Selected Language: ")
-        OutlinedButton(onClick = {expanded = true}) {
+        Text(text)
+        OutlinedButton(
+            onClick = {expanded = true},
+            modifier = Modifier.padding(horizontal = 10.dp)
+        ) {
             Text(selectedLanguage.name)
         }
 

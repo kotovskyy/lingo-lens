@@ -557,14 +557,14 @@
     "pl": "Laptop",
     "ru": "Ноутбук"
   },
-  "mouse": {
-    "en": "Mouse",
-    "es": "Ratón",
-    "fr": "Souris",
-    "de": "Maus",
-    "it": "Mouse",
-    "pl": "Mysz",
-    "ru": "Мышь"
+  "computer mouse": {
+    "en": "Computer Mouse",
+    "es": "Ratón de computadora",
+    "fr": "Souris d'ordinateur",
+    "de": "Computermaus",
+    "it": "Mouse del computer",
+    "pl": "Mysz komputerowa",
+    "ru": "Компьютерная мышь"
   },
   "remote": {
     "en": "Remote",
@@ -657,7 +657,7 @@
     "ru": "Зубная щетка"
   },
   "tv": {
-    "en": "TV",
+    "en": "The TV",
     "es": "Televisión",
     "fr": "Télévision",
     "de": "Fernseher",
