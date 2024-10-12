@@ -17,7 +17,7 @@ import kotlin.math.min
 class YoloAPI(
     private val context: Context,
     private val modelFilename: String,
-    private val confidenceThreshold: Float = 0.5f,
+    private val confidenceThreshold: Float = 0.4f,
     private val iouThreshold: Float = 0.5f
 ){
     private val imageProcessor = ImageProcessor.Builder()

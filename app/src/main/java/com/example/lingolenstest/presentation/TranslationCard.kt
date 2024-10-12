@@ -2,6 +2,8 @@ package com.example.lingolenstest.presentation
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.compose.foundation.background
@@ -35,14 +37,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.lingolenstest.LanguagePicker
 import com.example.lingolenstest.R
 import com.example.lingolenstest.translateAPI.DefinitionDetail
@@ -50,7 +49,6 @@ import com.example.lingolenstest.translateAPI.Language
 import com.example.lingolenstest.translateAPI.TranslationResponse
 import com.example.lingolenstest.translateAPI.TranslatorInstance
 import com.example.lingolenstest.translateAPI.languages
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -62,7 +60,7 @@ fun TranslationCard(
 ) {
     val context = LocalContext.current
     val savedTranslationCode = getTranslationLanguage(context)
-    var defaultTranslationLanguage = languages.find { it.code == savedTranslationCode } ?: Language("nan", "Choose language")
+    val defaultTranslationLanguage = languages.find { it.code == savedTranslationCode } ?: Language("nan", "Choose language")
     var translationLanguage by remember { mutableStateOf(defaultTranslationLanguage) }
 
     var tts by remember { mutableStateOf<TextToSpeech?>(null) }
@@ -127,90 +125,133 @@ fun TranslationCard(
             ),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Header(
-                defaultLanguage = defaultTranslationLanguage,
-                onClose = onClose,
-                onLanguageSelected = { language ->
-                    translation = ""
-                    transcription = ""
-                    wordDescription = ""
-
-                    translationLanguage = language
-                    saveTranslationLanguage(context, language.code)
-                    tts?.language = Locale(language.code)
-                    coroutineScope.launch {
-                        val response = translateWord(word, sourceLangCode, language.code)
-                        response?.let {
-                            translation = it.translation
-                            transcription = it.info.pronunciation.translation ?: ""
-                            wordDescription = it.info.definitions?.firstOrNull()?.list?.firstOrNull()?.definition ?: ""
-                        }
-                    }
-                }
+        if (!isOnline(context)){
+            ErrorTranslationCard(
+                title = "No internet connection",
+                description = "Translation is not be available",
+                onClose = onClose
             )
-            if (translationLanguage.code != "nan"){
-                Column(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
-                ) {
-                    Text(text = "Word: $word", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-                    if (translation.isNotEmpty()){
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "Translation: $translation",
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            IconButton(
-                                onClick = {
-                                    tts?.speak(translation, TextToSpeech.QUEUE_FLUSH, null, null)
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.play_sound),
-                                    contentDescription = "play",
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.size(24.dp)
-                                )
+        } else {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                TranslationHeader(
+                    defaultLanguage = defaultTranslationLanguage,
+                    onClose = onClose,
+                    onLanguageSelected = { language ->
+                        translation = ""
+                        transcription = ""
+                        wordDescription = ""
+
+                        translationLanguage = language
+                        saveTranslationLanguage(context, language.code)
+                        tts?.language = Locale(language.code)
+                        coroutineScope.launch {
+                            val response = translateWord(word, sourceLangCode, language.code)
+                            response?.let {
+                                translation = it.translation
+                                transcription = it.info.pronunciation.translation ?: ""
+                                wordDescription = it.info.definitions?.firstOrNull()?.list?.firstOrNull()?.definition ?: ""
                             }
                         }
                     }
-                    if (transcription.isNotEmpty()) {
-                        Spacer(modifier = Modifier
-                            .height(10.dp)
-                            .fillMaxWidth())
-                        Text(
-                            text = "Transcription: $transcription",
-                            fontWeight = FontWeight.Normal,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    if (wordDescription.isNotEmpty()){
-                        Text(
-                            text = "Description: $wordDescription",
-                            fontWeight = FontWeight.Light,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                )
+                if (translationLanguage.code != "nan"){
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        Text(text = "Word: $word", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                        if (translation.isNotEmpty()){
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Translation: $translation",
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.weight(1f),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                IconButton(
+                                    onClick = {
+                                        tts?.speak(translation, TextToSpeech.QUEUE_FLUSH, null, null)
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.play_sound),
+                                        contentDescription = "play",
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
+                        }
+                        if (transcription.isNotEmpty()) {
+                            Spacer(modifier = Modifier
+                                .height(10.dp)
+                                .fillMaxWidth())
+                            Text(
+                                text = "Transcription: $transcription",
+                                fontWeight = FontWeight.Normal,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        if (wordDescription.isNotEmpty()){
+                            Text(
+                                text = "Description: $wordDescription",
+                                fontWeight = FontWeight.Light,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
             }
         }
+
     }
 }
 
 @Composable
-private fun Header(
+fun ErrorTranslationCard(
+    title: String,
+    description: String,
+    onClose: () -> Unit
+){
+    Column(
+        modifier = Modifier.padding(16.dp),
+        horizontalAlignment = Alignment.Start
+    ){
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            CloseCardButton(onClose)
+        }
+        Text(
+            text = description,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Light,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
+fun TranslationHeader(
     defaultLanguage: Language,
     onClose: () -> Unit,
     onLanguageSelected: (Language) -> Unit
@@ -223,19 +264,26 @@ private fun Header(
         LanguagePicker(defaultLanguage = defaultLanguage) { language ->
             onLanguageSelected(language)
         }
-        IconButton(
-            onClick = onClose,
-            modifier = Modifier.background(
-                color = MaterialTheme.colorScheme.onSurface,
-                shape = RoundedCornerShape(50.dp)
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Close,
-                tint = MaterialTheme.colorScheme.surface,
-                contentDescription = "Close"
-            )
-        }
+        CloseCardButton(onClose)
+    }
+}
+
+@Composable
+fun CloseCardButton(
+    onClose: () -> Unit
+){
+    IconButton(
+        onClick = onClose,
+        modifier = Modifier.background(
+            color = MaterialTheme.colorScheme.onSurface,
+            shape = RoundedCornerShape(50.dp)
+        )
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Close,
+            tint = MaterialTheme.colorScheme.surface,
+            contentDescription = "Close"
+        )
     }
 }
 
@@ -253,15 +301,33 @@ suspend fun translateWord(word: String, sourceLangCode: String, targetLangCode: 
     return try {
         val response = TranslatorInstance.api.translateLabel(sourceLangCode, targetLangCode, word)
         if (response.isSuccessful) {
-            val rawResponse = response.body()?.toString()
-            Log.d("RawAPIResponse", rawResponse ?: "No response body")
             response.body()
         } else {
-            Log.e("Label Translate", "Failed to translate label: ${response.errorBody()?.string()}")
             null
         }
     } catch (e: Exception) {
-        Log.e("TranslateError", "Error translating label: $word", e)
         null
     }
+}
+
+fun isOnline(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (connectivityManager != null) {
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                return true
+            }
+        }
+    }
+    return false
 }

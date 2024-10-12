@@ -79,7 +79,7 @@ fun CameraPreview(
 ){
     val context = LocalContext.current
 
-    var confidenceThreshold by remember { mutableFloatStateOf(0.5f) }
+    var confidenceThreshold by remember { mutableFloatStateOf(0.4f) }
     var iouThreshold by remember { mutableFloatStateOf(0.5f) }
 
     var isImageBeingCaptured by remember { mutableStateOf(false) }

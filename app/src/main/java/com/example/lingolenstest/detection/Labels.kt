@@ -86,4 +86,3 @@ object Labels {
         put(79, "toothbrush")
     }
 }
-
