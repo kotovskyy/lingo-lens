@@ -1,4 +1,4 @@
-package com.example.lingolenstest
+package com.example.lingolenstest.translateAPI
 
 data class Language(val code: String, val name: String)
 
@@ -10,7 +10,4 @@ val languages = listOf(
     Language("it", "Italian"),
     Language("pl", "Polish"),
     Language("ru", "Russian")
-//    Language("zh", "Chinese"),
-//    Language("ja", "Japanese"),
-//    Language("ko", "Korean")
 )

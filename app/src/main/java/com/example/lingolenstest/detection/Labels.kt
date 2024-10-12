@@ -1,4 +1,4 @@
-package com.example.lingolenstest
+package com.example.lingolenstest.detection
 
 import android.util.SparseArray
 

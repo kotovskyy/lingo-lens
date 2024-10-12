@@ -1,4 +1,4 @@
-package com.example.lingolenstest
+package com.example.lingolenstest.translateAPI
 
 import android.content.Context
 import org.json.JSONObject
@@ -20,7 +20,6 @@ class LabelTranslator(private val context: Context) {
         val jsonObject = JSONObject(jsonStr)
         val translationMap = mutableMapOf<String, Map<String, String>>()
 
-        // Loop through the keys in the JSON object and parse into a Map
         jsonObject.keys().forEach { label ->
             val languageMap = jsonObject.getJSONObject(label)
             val langMap = mutableMapOf<String, String>()
@@ -35,7 +34,6 @@ class LabelTranslator(private val context: Context) {
         return translationMap
     }
 
-    // Helper function to read JSON from assets
     private fun readJsonFromAssets(filename: String): String {
         val json: String
         try {
@@ -46,7 +44,6 @@ class LabelTranslator(private val context: Context) {
         return json
     }
 
-    // Function to get the translated label
     fun getTranslatedLabel(label: String, langCode: String): String {
         return translations[label]?.get(langCode) ?: label
     }

@@ -1,9 +1,9 @@
-package com.example.lingolenstest
+package com.example.lingolenstest.presentation
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.CornerPathEffect
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,13 +24,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import com.example.lingolenstest.detection.Labels
+import com.example.lingolenstest.detection.BoundingBox
+import com.example.lingolenstest.detection.YoloAPI
+import com.example.lingolenstest.translateAPI.LabelTranslator
 import com.example.lingolenstest.ui.theme.LingoLensTestTheme
 import kotlin.math.max
 import kotlin.math.min
@@ -41,15 +50,15 @@ class DisplayImageActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val imageUri = intent.getStringExtra("image_uri")
         val confidenceThreshold = intent.getFloatExtra("confidence_threshold", 0.5f)
         val iouThreshold = intent.getFloatExtra("iou_threshold", 0.5f)
-        val labelsTranslator = LabelTranslator(this)
 
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        selectedLanguageCode = sharedPreferences.getString("selected_language", "en") ?: "en" // Default to English
+        selectedLanguageCode = sharedPreferences.getString("selected_language", "en") ?: "en"
 
-        Log.d("Selected language", "CODE: $selectedLanguageCode")
+        val labelsTranslator = LabelTranslator(this)
 
         yoloAPI = YoloAPI(
             context = this,
@@ -71,19 +80,26 @@ class DisplayImageActivity: ComponentActivity() {
 
                         LaunchedEffect(Unit) {
                             yoloAPI.analyze(bitmap)
-
                             val boxes = yoloAPI.boundingBoxes
-
 
                             translatedLabels = boxes.map {
                                 labelsTranslator.getTranslatedLabel(Labels.LABELS.get(it.classID), selectedLanguageCode)
                             }
-                            detectedBitmap = drawBoundingBoxes(bitmap, yoloAPI.boundingBoxes, translatedLabels)
+                            detectedBitmap = drawBoundingBoxes(
+                                bitmap = bitmap,
+                                boxes = yoloAPI.boundingBoxes,
+                                labels = translatedLabels
+                            )
                         }
+
                         Box(
                             contentAlignment = Alignment.Center
                         ){
-                            DisplayImage(bitmap = detectedBitmap, yoloAPI.boundingBoxes) { bbox ->
+                            DisplayImage(
+                                originalBitmap = bitmap,
+                                bboxBitmap = detectedBitmap,
+                                boxes = yoloAPI.boundingBoxes
+                            ) { bbox ->
                                 selectedBoundingBox = bbox
                                 showTranslationCard = true
                             }
@@ -101,7 +117,6 @@ class DisplayImageActivity: ComponentActivity() {
                                 )
                             }
                         }
-
                     } else {
                         Text(text = "Couldn't open image")
                     }
@@ -130,13 +145,22 @@ class DisplayImageActivity: ComponentActivity() {
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(mutableBitmap)
         val paint = Paint().apply {
-            color = Color.GREEN
+            color = android.graphics.Color.GREEN
             strokeWidth = 4f
             style = Paint.Style.STROKE
+            isAntiAlias = true // Smoother lines
+            pathEffect = CornerPathEffect(15f) // Rounded corners for the bounding boxes
+        }
+
+        // Paint for filled boxes
+        val fillPaint = Paint().apply {
+            color = android.graphics.Color.GREEN
+            alpha = 40 // transparency (0-255)
+            style = Paint.Style.FILL
         }
 
         val textPaint = Paint().apply {
-            color = Color.GREEN
+            color = android.graphics.Color.GREEN
             textSize = 25f
             style = android.graphics.Paint.Style.FILL
             setShadowLayer(5f, 0f, 0f, android.graphics.Color.BLACK)  // Add shadow for better readability
@@ -154,6 +178,7 @@ class DisplayImageActivity: ComponentActivity() {
             val displayText = "$confidence $label"
 
             canvas.drawRect(minX, minY, maxX, maxY, paint)
+            canvas.drawRect(minX, minY, maxX, maxY, fillPaint)
             canvas.drawText(displayText, minX, minY-10, textPaint)
         }
         
@@ -162,33 +187,56 @@ class DisplayImageActivity: ComponentActivity() {
 }
 
 @Composable
-fun DisplayImage(bitmap: Bitmap, boxes: List<BoundingBox>, onBoxClicked: (BoundingBox) -> Unit){
+fun DisplayImage(originalBitmap: Bitmap, bboxBitmap: Bitmap, boxes: List<BoundingBox>, onBoxClicked: (BoundingBox) -> Unit){
+    val sdkInt = android.os.Build.VERSION.SDK_INT
     var imageSize by remember { mutableStateOf(Size.Zero) }
     // Sort the boxes by area (width * height) in ascending order
     val sortedBoxes = boxes.sortedBy { box ->
-        val width = box.width * bitmap.width
-        val height = box.height * bitmap.height
+        val width = box.width * bboxBitmap.width
+        val height = box.height * bboxBitmap.height
         width * height // Area of the bounding box
     }
 
+    // Blurred background
     Image(
-        bitmap = bitmap.asImageBitmap(),
+        bitmap = originalBitmap.asImageBitmap(),
+        contentDescription = null,
+        modifier = Modifier
+                .fillMaxSize()
+                .blur(10.dp),
+        contentScale = ContentScale.Crop
+    )
+
+    if (sdkInt < android.os.Build.VERSION_CODES.S){
+        // simulation of the Modifier.blur effect
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    alpha = 0.8f
+                }
+                .background(Color.Black.copy(alpha = 0.9f))
+        )
+    }
+
+    Image(
+        bitmap = bboxBitmap.asImageBitmap(),
         contentDescription = "Captured Image",
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset: Offset ->
-                        val maxWidth = bitmap.width
-                        val maxHeight = bitmap.height
+                        val maxWidth = bboxBitmap.width
+                        val maxHeight = bboxBitmap.height
                         val bitmapYOffset = (imageSize.height - maxHeight)/2
 
                         for (box in sortedBoxes) {
-                            val minX = max(box.centerX * bitmap.width - box.width * bitmap.width / 2, 0f)
-                            val minY = max(box.centerY * bitmap.height - box.height * bitmap.height / 2 + bitmapYOffset, 0f)
+                            val minX = max(box.centerX * bboxBitmap.width - box.width * bboxBitmap.width / 2, 0f)
+                            val minY = max(box.centerY * bboxBitmap.height - box.height * bboxBitmap.height / 2 + bitmapYOffset, 0f)
 
-                            val maxX = min(box.centerX * bitmap.width + box.width * bitmap.width / 2, maxWidth.toFloat())
-                            val maxY = min(box.centerY * bitmap.height + box.height * bitmap.height / 2 + bitmapYOffset, maxHeight.toFloat())
+                            val maxX = min(box.centerX * bboxBitmap.width + box.width * bboxBitmap.width / 2, maxWidth.toFloat())
+                            val maxY = min(box.centerY * bboxBitmap.height + box.height * bboxBitmap.height / 2 + bitmapYOffset, maxHeight.toFloat())
 
                             if (tapOffset.x in minX..maxX && tapOffset.y in minY..maxY){
                                 onBoxClicked(box)

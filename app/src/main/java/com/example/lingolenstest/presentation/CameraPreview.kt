@@ -1,4 +1,4 @@
-package com.example.lingolenstest
+package com.example.lingolenstest.presentation
 
 import android.content.Context
 import android.content.Intent
@@ -12,29 +12,39 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,14 +56,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
+import com.example.lingolenstest.R
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.ExecutorService
@@ -61,7 +73,12 @@ import java.util.concurrent.Executors
 
 
 @Composable
-fun CameraPreview(){
+fun CameraPreview(
+    showSettings: Boolean,
+    onSettingsShrink: () -> Unit
+){
+    val context = LocalContext.current
+
     var confidenceThreshold by remember { mutableFloatStateOf(0.5f) }
     var iouThreshold by remember { mutableFloatStateOf(0.5f) }
 
@@ -70,9 +87,8 @@ fun CameraPreview(){
     val alphaAnimation = remember { Animatable(1f) }
     val flashAnimation = remember { Animatable(0f) }
 
-    val context = LocalContext.current
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
     val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     var cameraSelector by remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
@@ -127,7 +143,7 @@ fun CameraPreview(){
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer { alpha = alphaAnimation.value },
-            factory = { ctx ->
+            factory = { _ ->
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner,
@@ -143,18 +159,12 @@ fun CameraPreview(){
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White.copy(alpha = flashAnimation.value))
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = flashAnimation.value))
             )
         }
         // Show circular progress indicator while loading
         if (isImageBeingCaptured) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
-            ) {
-                CircularProgressIndicator()
-            }
+            CenterProgressIndicator()
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -163,83 +173,174 @@ fun CameraPreview(){
                 .fillMaxWidth()
                 .padding(horizontal = 40.dp)
         ){
-            Text(text = "Confidence threshold: ${String.format("%.2f", confidenceThreshold)}")
-            Slider(
-                value = confidenceThreshold,
-                onValueChange = { confidenceThreshold = it },
-                valueRange = 0f..1f,
-                steps = 19,
-                modifier = Modifier.padding(bottom = 8.dp, top = 4.dp)
-            )
-            Text(text = "IOU threshold: ${String.format("%.2f", iouThreshold)}")
-            Slider(
-                value = iouThreshold,
-                onValueChange = { iouThreshold = it },
-                valueRange = 0f..1f,
-                steps = 19,
-                modifier = Modifier.padding(bottom = 8.dp, top = 4.dp)
-            )
+            SlidingSettings(showSettings = showSettings, onClick = { onSettingsShrink() }) {
+                SettingSlider(text = "Confidence threshold: ", value = confidenceThreshold) { value ->
+                    confidenceThreshold = value
+                }
+                SettingSlider(text = "IOU threshold: ", value = iouThreshold) { value ->
+                    iouThreshold = value
+                }
+            }
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 15.dp)
             ) {
-                CameraButton(
-                    onClick = {
-                        cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-                            CameraSelector.DEFAULT_FRONT_CAMERA
-                        } else {
-                            CameraSelector.DEFAULT_BACK_CAMERA
-                        }
+                if (!isImageBeingCaptured){
+                    CameraInterfaceButton(
+                        onClick = {
+                            cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                CameraSelector.DEFAULT_FRONT_CAMERA
+                            } else {
+                                CameraSelector.DEFAULT_BACK_CAMERA
+                            }
 
-                        cameraProvider.unbindAll()
-                        cameraProvider.bindToLifecycle(
-                            lifecycleOwner,
-                            cameraSelector,
-                            preview,
-                            imageCapture
-                        )
-                    },
-                    iconID = R.drawable.flip_camera_24,
-                    description = "Flip Camera"
-                )
-                CameraButton(
-                    onClick = {
-                        isImageBeingCaptured = true
-                        takePhoto(context, imageCapture, cameraExecutor, previewView, confidenceThreshold, iouThreshold) {
-                            isImageBeingCaptured = false
-                        }
-                    },
-                    iconID = R.drawable.photo_camera_24,
-                    description = "Take Photo"
-                )
+                            cameraProvider.unbindAll()
+                            cameraProvider.bindToLifecycle(
+                                lifecycleOwner,
+                                cameraSelector,
+                                preview,
+                                imageCapture
+                            )
+                        },
+                        iconID = R.drawable.flip_camera_24,
+                        description = "Flip Camera",
+                    )
+                    CameraInterfaceButton(
+                        onClick = {
+                            onSettingsShrink()
+                            isImageBeingCaptured = true
+                            takePhoto(context, imageCapture, cameraExecutor, previewView, confidenceThreshold, iouThreshold) {
+                                isImageBeingCaptured = false
+                            }
+                        },
+                        iconID = R.drawable.photo_camera_24,
+                        description = "Take Photo"
+                    )
+                }
             }
         }
     }
 }
 
-
 @Composable
-fun CameraButton(
-    onClick: () -> Unit,
-    iconID: Int,
-    description: String = ""
-) {
-    IconButton(
+fun CenterProgressIndicator() {
+    Box(
         modifier = Modifier
-            .padding(15.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(MaterialTheme.colorScheme.primary),
-        onClick = { onClick() })
-    {
-        Icon(
-            painter = painterResource(id = iconID),
-            contentDescription = description,
-            modifier = Modifier.size(48.dp)
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)
+            .padding(16.dp)
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(60.dp),
+            color = MaterialTheme.colorScheme.secondary,
+            strokeWidth = 5.dp
         )
     }
 }
 
+
+@Composable
+fun SlidingSettings(
+    showSettings: Boolean,
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+){
+    AnimatedVisibility(
+        visible = showSettings,
+        enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(400, easing = LinearOutSlowInEasing)),
+        exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(400, easing = FastOutLinearInEasing))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(Color.Transparent)
+                .border(
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
+                    shape = RoundedCornerShape(10.dp)
+                )
+        ) {
+            IconButton(
+                onClick = { onClick() },
+                colors = IconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                    disabledContainerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.24f),
+                    disabledContentColor = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.24f)
+                ),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+                    .padding(top = 10.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    tint = MaterialTheme.colorScheme.onTertiary,
+                    contentDescription = "Close Settings"
+                )
+            }
+            content()
+        }
+    }
+}
+
+@Composable
+fun SettingSlider(
+    text: String,
+    value: Float,
+    onValueChange: (Float) -> Unit
+){
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Text(
+            text = text + String.format("%.2f", value),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onTertiary,
+            modifier = Modifier.padding(bottom = 5.dp)
+        )
+        Slider(
+            value = value,
+            onValueChange = { onValueChange(it) },
+            valueRange = 0f..1f,
+            steps = 19,
+            colors = SliderDefaults.colors(
+                thumbColor = MaterialTheme.colorScheme.tertiary,
+                activeTrackColor = MaterialTheme.colorScheme.tertiary,
+                inactiveTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.24f),
+                activeTickColor = MaterialTheme.colorScheme.onTertiary,
+                inactiveTickColor = MaterialTheme.colorScheme.onTertiary
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp)
+        )
+    }
+}
+
+@Composable
+fun CameraInterfaceButton(
+    onClick: () -> Unit,
+    iconID: Int,
+    description: String = ""
+){
+    IconButton(
+        onClick = { onClick() },
+        modifier = Modifier
+            .padding(15.dp)
+            .clip(RoundedCornerShape(50.dp))
+            .background(MaterialTheme.colorScheme.tertiary)
+            .padding(12.dp),
+    ){
+        Icon(
+            painter = painterResource(id = iconID),
+            contentDescription = description,
+            tint = MaterialTheme.colorScheme.onTertiary,
+            modifier = Modifier.size(48.dp)
+        )
+    }
+}
 
 fun takePhoto(
     context: Context,
@@ -292,15 +393,12 @@ fun takePhoto(
 
 
 fun scaleCapturedImage(bitmap: Bitmap, viewFinder: View): Bitmap {
-    // Get the dimensions of the View (Preview)
     val viewWidth = viewFinder.width
     val viewHeight = viewFinder.height
 
-    // Get the dimensions of the captured image
     val imageWidth = bitmap.width
     val imageHeight = bitmap.height
 
-    // Calculate the scaling factor to maintain the aspect ratio
     val aspectRatio = imageWidth.toFloat() / imageHeight.toFloat()
 
     // Determine the target width and height while maintaining aspect ratio
@@ -315,7 +413,6 @@ fun scaleCapturedImage(bitmap: Bitmap, viewFinder: View): Bitmap {
         targetWidth = (viewHeight * aspectRatio).toInt()
     }
 
-    // Scale the bitmap to the target size
     return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
 }
 

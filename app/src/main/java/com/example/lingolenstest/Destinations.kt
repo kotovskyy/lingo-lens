@@ -2,6 +2,7 @@ package com.example.lingolenstest
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
+import com.example.lingolenstest.presentation.VideoScreen
 
 
 interface Destination{
