@@ -17,13 +17,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LingoLensTest"
+        android:theme="@style/Theme.LingoLens"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.LingoLensTest"
+            android:theme="@style/Theme.LingoLens"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +34,7 @@
         <activity
             android:name=".presentation.DisplayImageActivity"
             android:exported="true"
-            android:theme="@style/Theme.LingoLensTest"
+            android:theme="@style/Theme.LingoLens"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -43,7 +43,7 @@
         </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.lingolenstest.provider"
+            android:authorities="com.example.lingolens.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

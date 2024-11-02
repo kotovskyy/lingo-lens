@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.lingolenstest"
+    namespace = "com.example.lingolens"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.lingolenstest"
+        applicationId = "com.example.lingolens"
         minSdk = 29
         targetSdk = 34
         versionCode = 1

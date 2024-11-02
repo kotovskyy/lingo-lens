@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "LingoLensTest"
+rootProject.name = "Lingo Lens"
 include(":app")
  
