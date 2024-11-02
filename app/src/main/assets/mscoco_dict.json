@@ -330,7 +330,7 @@
     "de": "Skateboard",
     "it": "Monopattino",
     "pl": "Deskorolka",
-    "ru": "Скейборд"
+    "ru": "Скейтборд"
   },
   "surfboard": {
     "en": "Surfboard",
@@ -366,7 +366,7 @@
     "de": "Weinglas",
     "it": "Calice",
     "pl": "Kieliszek",
-    "ru": "Бокал вина"
+    "ru": "Бокал"
   },
   "cup": {
     "en": "Cup",
@@ -530,14 +530,14 @@
     "pl": "Łóżko",
     "ru": "Кровать"
   },
-  "dining table": {
-    "en": "Dining table",
-    "es": "Mesa de comedor",
-    "fr": "Table à manger",
-    "de": "Esstisch",
-    "it": "Tavolo da pranzo",
-    "pl": "Stół jadalny",
-    "ru": "Столовая"
+  "table": {
+    "en": "Table",
+    "es": "Mesa",
+    "fr": "Table",
+    "de": "Tisch",
+    "it": "Tavolo",
+    "pl": "Stół",
+    "ru": "Стол"
   },
   "toilet": {
     "en": "Toilet",
@@ -553,7 +553,7 @@
     "es": "Portátil",
     "fr": "Ordinateur portable",
     "de": "Laptop",
-    "it": "Laptop",
+    "it": "Computer portatile",
     "pl": "Laptop",
     "ru": "Ноутбук"
   },
@@ -562,7 +562,7 @@
     "es": "Ratón de computadora",
     "fr": "Souris d'ordinateur",
     "de": "Computermaus",
-    "it": "Mouse del computer",
+    "it": "Mouse",
     "pl": "Mysz komputerowa",
     "ru": "Компьютерная мышь"
   },
@@ -591,7 +591,7 @@
     "de": "Mikrowelle",
     "it": "Microonde",
     "pl": "Mikrofala",
-    "ru": "Микроволновая печь"
+    "ru": "Микроволновка"
   },
   "oven": {
     "en": "Oven",
