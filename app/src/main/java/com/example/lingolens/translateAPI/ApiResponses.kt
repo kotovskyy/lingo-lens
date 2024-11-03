@@ -24,3 +24,5 @@ data class DefinitionDetail(
     val example: String?,
     val synonyms: List<String>?
 )
+
+data class LanguagesResponse(val languages: List<Language>)

@@ -39,6 +39,9 @@ import com.example.lingolens.detection.Labels
 import com.example.lingolens.detection.BoundingBox
 import com.example.lingolens.detection.YoloAPI
 import com.example.lingolens.translateAPI.LabelTranslator
+import com.example.lingolens.translateAPI.Language
+import com.example.lingolens.translateAPI.TranslatorInstance
+import com.example.lingolens.translateAPI.translationLanguages
 import com.example.lingolens.ui.theme.LingoLensTheme
 import kotlin.math.max
 import kotlin.math.min
@@ -90,6 +93,9 @@ class DisplayImageActivity: ComponentActivity() {
                                 boxes = yoloAPI.boundingBoxes,
                                 labels = translatedLabels
                             )
+
+                            translationLanguages = emptyList<Language>()
+                            translationLanguages = TranslatorInstance.fetchSupportedLanguages()!!
                         }
 
                         Box(

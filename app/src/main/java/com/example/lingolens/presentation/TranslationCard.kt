@@ -53,7 +53,8 @@ import com.example.lingolens.translateAPI.DefinitionDetail
 import com.example.lingolens.translateAPI.Language
 import com.example.lingolens.translateAPI.TranslationResponse
 import com.example.lingolens.translateAPI.TranslatorInstance
-import com.example.lingolens.translateAPI.languages
+import com.example.lingolens.translateAPI.appLanguages
+import com.example.lingolens.translateAPI.translationLanguages
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -65,7 +66,7 @@ fun TranslationCard(
 ) {
     val context = LocalContext.current
     val savedTranslationCode = getTranslationLanguage(context)
-    val defaultTranslationLanguage = languages.find { it.code == savedTranslationCode } ?: Language("nan", "Choose language")
+    val defaultTranslationLanguage = translationLanguages.find { it.code == savedTranslationCode } ?: Language("nan", "Choose language")
     var translationLanguage by remember { mutableStateOf(defaultTranslationLanguage) }
 
     var tts by remember { mutableStateOf<TextToSpeech?>(null) }
@@ -135,7 +136,7 @@ fun TranslationCard(
                     .padding(16.dp)
                     .border(
                         2.dp,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.secondary,
                         shape = RoundedCornerShape(25.dp)
                     )
                     .background(
@@ -282,9 +283,12 @@ fun TranslationHeader(
         verticalAlignment = Alignment.Top,
         modifier = Modifier.fillMaxWidth()
     ) {
-        LanguagePicker(defaultLanguage = defaultLanguage) { language ->
-            onLanguageSelected(language)
-        }
+        LanguagePicker(
+            languages = translationLanguages,
+            defaultLanguage = defaultLanguage,
+            onLanguageSelected = { language -> onLanguageSelected(language) },
+            showFlags = false
+        )
         CloseCardButton(onClose)
     }
 }
@@ -296,13 +300,13 @@ fun CloseCardButton(
     IconButton(
         onClick = onClose,
         modifier = Modifier.background(
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.secondary,
             shape = RoundedCornerShape(50.dp)
         )
     ) {
         Icon(
             imageVector = Icons.Filled.Close,
-            tint = MaterialTheme.colorScheme.surface,
+            tint = MaterialTheme.colorScheme.onSecondary,
             contentDescription = "Close"
         )
     }

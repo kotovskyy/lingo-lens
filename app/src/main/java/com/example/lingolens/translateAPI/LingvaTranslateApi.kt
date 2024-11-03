@@ -1,5 +1,7 @@
 package com.example.lingolens.translateAPI
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,6 +18,9 @@ interface LingvaTranslateApi {
         @Path("targetLang") targetLang: String,
         @Path("text") text: String
     ): Response<TranslationResponse>
+
+    @GET("languages")
+    suspend fun getSupportedLanguages(): Response<LanguagesResponse>
 }
 
 object TranslatorInstance {
@@ -27,5 +32,21 @@ object TranslatorInstance {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(LingvaTranslateApi::class.java)
+    }
+
+    suspend fun fetchSupportedLanguages(): List<Language>? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = api.getSupportedLanguages()
+                if (response.isSuccessful) {
+                    response.body()?.languages?.filter { it.code != "auto" }
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
     }
 }
