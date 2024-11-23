@@ -1,0 +1,722 @@
+{
+  "person": {
+    "en": "Person",
+    "es": "Persona",
+    "fr": "Personne",
+    "de": "Person",
+    "it": "Persona",
+    "pl": "Osoba",
+    "ru": "Человек"
+  },
+  "bicycle": {
+    "en": "Bicycle",
+    "es": "Bicicleta",
+    "fr": "Vélo",
+    "de": "Fahrrad",
+    "it": "Bicicletta",
+    "pl": "Rower",
+    "ru": "Велосипед"
+  },
+  "car": {
+    "en": "Car",
+    "es": "Coche",
+    "fr": "Voiture",
+    "de": "Auto",
+    "it": "Auto",
+    "pl": "Samochód",
+    "ru": "Машина"
+  },
+  "motorcycle": {
+    "en": "Motorcycle",
+    "es": "Motocicleta",
+    "fr": "Moto",
+    "de": "Motorrad",
+    "it": "Motocicletta",
+    "pl": "Motocykl",
+    "ru": "Мотоцикл"
+  },
+  "airplane": {
+    "en": "Airplane",
+    "es": "Avión",
+    "fr": "Avion",
+    "de": "Flugzeug",
+    "it": "Aereo",
+    "pl": "Samolot",
+    "ru": "Самолёт"
+  },
+  "bus": {
+    "en": "Bus",
+    "es": "Autobús",
+    "fr": "Bus",
+    "de": "Bus",
+    "it": "Autobus",
+    "pl": "Autobus",
+    "ru": "Автобус"
+  },
+  "train": {
+    "en": "Train",
+    "es": "Tren",
+    "fr": "Train",
+    "de": "Zug",
+    "it": "Treno",
+    "pl": "Pociąg",
+    "ru": "Поезд"
+  },
+  "truck": {
+    "en": "Truck",
+    "es": "Camión",
+    "fr": "Camion",
+    "de": "Lkw",
+    "it": "Camion",
+    "pl": "Ciężarówka",
+    "ru": "Грузовик"
+  },
+  "boat": {
+    "en": "Boat",
+    "es": "Barco",
+    "fr": "Bateau",
+    "de": "Boot",
+    "it": "Barca",
+    "pl": "Łódź",
+    "ru": "Лодка"
+  },
+  "traffic light": {
+    "en": "Traffic light",
+    "es": "Semáforo",
+    "fr": "Feu de circulation",
+    "de": "Ampel",
+    "it": "Semaforo",
+    "pl": "Sygnalizacja świetlna",
+    "ru": "Светофор"
+  },
+  "fire hydrant": {
+    "en": "Fire hydrant",
+    "es": "Hidrante",
+    "fr": "Bouche d'incendie",
+    "de": "Hydrant",
+    "it": "Idrante",
+    "pl": "Hydrant",
+    "ru": "Пожарный гидрант"
+  },
+  "stop sign": {
+    "en": "Stop sign",
+    "es": "Señal de stop",
+    "fr": "Panneau stop",
+    "de": "Stoppschild",
+    "it": "Segnale di stop",
+    "pl": "Znak stopu",
+    "ru": "Знак стоп"
+  },
+  "parking meter": {
+    "en": "Parking meter",
+    "es": "Parquímetro",
+    "fr": "Parcmètre",
+    "de": "Parkuhr",
+    "it": "Parcheggiometro",
+    "pl": "Parkometr",
+    "ru": "Паркометр"
+  },
+  "bench": {
+    "en": "Bench",
+    "es": "Banco",
+    "fr": "Banc",
+    "de": "Bank",
+    "it": "Panchina",
+    "pl": "Ławka",
+    "ru": "Скамейка"
+  },
+  "bird": {
+    "en": "Bird",
+    "es": "Pájaro",
+    "fr": "Oiseau",
+    "de": "Vogel",
+    "it": "Uccello",
+    "pl": "Ptak",
+    "ru": "Птица"
+  },
+  "cat": {
+    "en": "Cat",
+    "es": "Gato",
+    "fr": "Chat",
+    "de": "Katze",
+    "it": "Gatto",
+    "pl": "Kot",
+    "ru": "Кошка"
+  },
+  "dog": {
+    "en": "Dog",
+    "es": "Perro",
+    "fr": "Chien",
+    "de": "Hund",
+    "it": "Cane",
+    "pl": "Pies",
+    "ru": "Собака"
+  },
+  "horse": {
+    "en": "Horse",
+    "es": "Caballo",
+    "fr": "Cheval",
+    "de": "Pferd",
+    "it": "Cavallo",
+    "pl": "Koń",
+    "ru": "Лошадь"
+  },
+  "sheep": {
+    "en": "Sheep",
+    "es": "Oveja",
+    "fr": "Mouton",
+    "de": "Schaf",
+    "it": "Pecora",
+    "pl": "Owca",
+    "ru": "Овца"
+  },
+  "cow": {
+    "en": "Cow",
+    "es": "Vaca",
+    "fr": "Vache",
+    "de": "Kuh",
+    "it": "Mucca",
+    "pl": "Krowa",
+    "ru": "Корова"
+  },
+  "elephant": {
+    "en": "Elephant",
+    "es": "Elefante",
+    "fr": "Éléphant",
+    "de": "Elefant",
+    "it": "Elefante",
+    "pl": "Słoń",
+    "ru": "Слон"
+  },
+  "bear": {
+    "en": "Bear",
+    "es": "Oso",
+    "fr": "Ours",
+    "de": "Bär",
+    "it": "Orso",
+    "pl": "Niedźwiedź",
+    "ru": "Медведь"
+  },
+  "zebra": {
+    "en": "Zebra",
+    "es": "Cebra",
+    "fr": "Zèbre",
+    "de": "Zebra",
+    "it": "Zebra",
+    "pl": "Zebra",
+    "ru": "Зебра"
+  },
+  "giraffe": {
+    "en": "Giraffe",
+    "es": "Jirafa",
+    "fr": "Girafe",
+    "de": "Giraffe",
+    "it": "Giraffa",
+    "pl": "Żyrafa",
+    "ru": "Жираф"
+  },
+  "backpack": {
+    "en": "Backpack",
+    "es": "Mochila",
+    "fr": "Sac à dos",
+    "de": "Rucksack",
+    "it": "Zaino",
+    "pl": "Plecak",
+    "ru": "Рюкзак"
+  },
+  "umbrella": {
+    "en": "Umbrella",
+    "es": "Paraguas",
+    "fr": "Parapluie",
+    "de": "Regenschirm",
+    "it": "Ombrello",
+    "pl": "Parasol",
+    "ru": "Зонтик"
+  },
+  "handbag": {
+    "en": "Handbag",
+    "es": "Bolso",
+    "fr": "Sac à main",
+    "de": "Handtasche",
+    "it": "Borsa",
+    "pl": "Torebka",
+    "ru": "Сумочка"
+  },
+  "tie": {
+    "en": "Tie",
+    "es": "Corbata",
+    "fr": "Cravate",
+    "de": "Krawatte",
+    "it": "Cravatta",
+    "pl": "Krawat",
+    "ru": "Галстук"
+  },
+  "suitcase": {
+    "en": "Suitcase",
+    "es": "Maleta",
+    "fr": "Valise",
+    "de": "Koffer",
+    "it": "Valigia",
+    "pl": "Walizka",
+    "ru": "Чемодан"
+  },
+  "frisbee": {
+    "en": "Frisbee",
+    "es": "Frisbee",
+    "fr": "Frisbee",
+    "de": "Frisbee",
+    "it": "Frisbee",
+    "pl": "Frisbee",
+    "ru": "Фрисби"
+  },
+  "skis": {
+    "en": "Skis",
+    "es": "Esquís",
+    "fr": "Skis",
+    "de": "Skier",
+    "it": "Sci",
+    "pl": "Narty",
+    "ru": "Лыжи"
+  },
+  "snowboard": {
+    "en": "Snowboard",
+    "es": "Tabla de snowboard",
+    "fr": "Planche à neige",
+    "de": "Snowboard",
+    "it": "Snowboard",
+    "pl": "Deska snowboardowa",
+    "ru": "Сноуборд"
+  },
+  "sports ball": {
+    "en": "Sports ball",
+    "es": "Pelota",
+    "fr": "Balle de sport",
+    "de": "Sportball",
+    "it": "Palla",
+    "pl": "Piłka",
+    "ru": "Спортивный мяч"
+  },
+  "kite": {
+    "en": "Kite",
+    "es": "Cometa",
+    "fr": "Cerf-volant",
+    "de": "Drachen",
+    "it": "Aquilone",
+    "pl": "Latawiec",
+    "ru": "Воздушный змей"
+  },
+  "baseball bat": {
+    "en": "Baseball bat",
+    "es": "Bate de béisbol",
+    "fr": "Batte de baseball",
+    "de": "Baseballschläger",
+    "it": "Bat da baseball",
+    "pl": "Kij baseballowy",
+    "ru": "Бейсбольная бита"
+  },
+  "baseball glove": {
+    "en": "Baseball glove",
+    "es": "Guante de béisbol",
+    "fr": "Gant de baseball",
+    "de": "Baseballhandschuh",
+    "it": "Guanto da baseball",
+    "pl": "Rękawica baseballowa",
+    "ru": "Бейсбольная перчатка"
+  },
+  "skateboard": {
+    "en": "Skateboard",
+    "es": "Patineta",
+    "fr": "Planche à roulettes",
+    "de": "Skateboard",
+    "it": "Monopattino",
+    "pl": "Deskorolka",
+    "ru": "Скейтборд"
+  },
+  "surfboard": {
+    "en": "Surfboard",
+    "es": "Tabla de surf",
+    "fr": "Planche de surf",
+    "de": "Surfbrett",
+    "it": "Tavola da surf",
+    "pl": "Deska surfingowa",
+    "ru": "Серфинг-доска"
+  },
+  "tennis racket": {
+    "en": "Tennis racket",
+    "es": "Raqueta de tenis",
+    "fr": "Raquette de tennis",
+    "de": "Tennisschläger",
+    "it": "Racchetta da tennis",
+    "pl": "Rakieta tenisowa",
+    "ru": "Теннисная ракетка"
+  },
+  "bottle": {
+    "en": "Bottle",
+    "es": "Botella",
+    "fr": "Bouteille",
+    "de": "Flasche",
+    "it": "Bottiglia",
+    "pl": "Butelka",
+    "ru": "Бутылка"
+  },
+  "wine glass": {
+    "en": "Wine glass",
+    "es": "Copa de vino",
+    "fr": "Verre à vin",
+    "de": "Weinglas",
+    "it": "Calice",
+    "pl": "Kieliszek",
+    "ru": "Бокал"
+  },
+  "cup": {
+    "en": "Cup",
+    "es": "Taza",
+    "fr": "Tasse",
+    "de": "Tasse",
+    "it": "Tazza",
+    "pl": "Kubek",
+    "ru": "Чашка"
+  },
+  "fork": {
+    "en": "Fork",
+    "es": "Tenedor",
+    "fr": "Fourchette",
+    "de": "Gabel",
+    "it": "Forchetta",
+    "pl": "Widelec",
+    "ru": "Вилка"
+  },
+  "knife": {
+    "en": "Knife",
+    "es": "Cuchillo",
+    "fr": "Couteau",
+    "de": "Messer",
+    "it": "Coltello",
+    "pl": "Nóż",
+    "ru": "Нож"
+  },
+  "spoon": {
+    "en": "Spoon",
+    "es": "Cuchara",
+    "fr": "Cuillère",
+    "de": "Löffel",
+    "it": "Cucchiaio",
+    "pl": "Łyżka",
+    "ru": "Ложка"
+  },
+  "bowl": {
+    "en": "Bowl",
+    "es": "Tazón",
+    "fr": "Bol",
+    "de": "Schüssel",
+    "it": "Ciotola",
+    "pl": "Miska",
+    "ru": "Миска"
+  },
+  "banana": {
+    "en": "Banana",
+    "es": "Plátano",
+    "fr": "Banane",
+    "de": "Banane",
+    "it": "Banana",
+    "pl": "Banan",
+    "ru": "Банан"
+  },
+  "apple": {
+    "en": "Apple",
+    "es": "Manzana",
+    "fr": "Pomme",
+    "de": "Apfel",
+    "it": "Mela",
+    "pl": "Jabłko",
+    "ru": "Яблоко"
+  },
+  "orange": {
+    "en": "Orange",
+    "es": "Naranja",
+    "fr": "Orange",
+    "de": "Orange",
+    "it": "Arancia",
+    "pl": "Pomarańcza",
+    "ru": "Апельсин"
+  },
+  "broccoli": {
+    "en": "Broccoli",
+    "es": "Brócoli",
+    "fr": "Brocoli",
+    "de": "Brokkoli",
+    "it": "Broccoli",
+    "pl": "Brokuł",
+    "ru": "Брокколи"
+  },
+  "carrot": {
+    "en": "Carrot",
+    "es": "Zanahoria",
+    "fr": "Carotte",
+    "de": "Karotte",
+    "it": "Carota",
+    "pl": "Marchew",
+    "ru": "Морковь"
+  },
+  "hot dog": {
+    "en": "Hot dog",
+    "es": "Perro caliente",
+    "fr": "Hot-dog",
+    "de": "Hotdog",
+    "it": "Hot dog",
+    "pl": "Hot dog",
+    "ru": "Хот-дог"
+  },
+  "pizza": {
+    "en": "Pizza",
+    "es": "Pizza",
+    "fr": "Pizza",
+    "de": "Pizza",
+    "it": "Pizza",
+    "pl": "Pizza",
+    "ru": "Пицца"
+  },
+  "donut": {
+    "en": "Donut",
+    "es": "Donut",
+    "fr": "Donut",
+    "de": "Donut",
+    "it": "Donut",
+    "pl": "Donut",
+    "ru": "Пончик"
+  },
+  "cake": {
+    "en": "Cake",
+    "es": "Pastel",
+    "fr": "Gâteau",
+    "de": "Kuchen",
+    "it": "Torta",
+    "pl": "Ciasto",
+    "ru": "Торт"
+  },
+  "chair": {
+    "en": "Chair",
+    "es": "Silla",
+    "fr": "Chaise",
+    "de": "Stuhl",
+    "it": "Sedia",
+    "pl": "Krzesło",
+    "ru": "Стул"
+  },
+  "couch": {
+    "en": "Couch",
+    "es": "Sofá",
+    "fr": "Canapé",
+    "de": "Couch",
+    "it": "Divano",
+    "pl": "Sofa",
+    "ru": "Диван"
+  },
+  "potted plant": {
+    "en": "Potted plant",
+    "es": "Planta en maceta",
+    "fr": "Plante en pot",
+    "de": "Topfpflanze",
+    "it": "Pianta in vaso",
+    "pl": "Roślina doniczkowa",
+    "ru": "Комнатное растение"
+  },
+  "bed": {
+    "en": "Bed",
+    "es": "Cama",
+    "fr": "Lit",
+    "de": "Bett",
+    "it": "Letto",
+    "pl": "Łóżko",
+    "ru": "Кровать"
+  },
+  "table": {
+    "en": "Table",
+    "es": "Mesa",
+    "fr": "Table",
+    "de": "Tisch",
+    "it": "Tavolo",
+    "pl": "Stół",
+    "ru": "Стол"
+  },
+  "toilet": {
+    "en": "Toilet",
+    "es": "Inodoro",
+    "fr": "Toilettes",
+    "de": "Toilette",
+    "it": "Gabinetto",
+    "pl": "Toaleta",
+    "ru": "Унитаз"
+  },
+  "laptop": {
+    "en": "Laptop",
+    "es": "Portátil",
+    "fr": "Ordinateur portable",
+    "de": "Laptop",
+    "it": "Computer portatile",
+    "pl": "Laptop",
+    "ru": "Ноутбук"
+  },
+  "computer mouse": {
+    "en": "Computer Mouse",
+    "es": "Ratón de computadora",
+    "fr": "Souris d'ordinateur",
+    "de": "Computermaus",
+    "it": "Mouse",
+    "pl": "Mysz komputerowa",
+    "ru": "Компьютерная мышь"
+  },
+  "remote": {
+    "en": "Remote",
+    "es": "Control remoto",
+    "fr": "Télécommande",
+    "de": "Fernbedienung",
+    "it": "Telecomando",
+    "pl": "Pilot",
+    "ru": "Пульт"
+  },
+  "keyboard": {
+    "en": "Keyboard",
+    "es": "Teclado",
+    "fr": "Clavier",
+    "de": "Tastatur",
+    "it": "Tastiera",
+    "pl": "Klawiatura",
+    "ru": "Клавиатура"
+  },
+  "microwave": {
+    "en": "Microwave",
+    "es": "Microondas",
+    "fr": "Micro-ondes",
+    "de": "Mikrowelle",
+    "it": "Microonde",
+    "pl": "Mikrofala",
+    "ru": "Микроволновка"
+  },
+  "oven": {
+    "en": "Oven",
+    "es": "Horno",
+    "fr": "Four",
+    "de": "Ofen",
+    "it": "Forno",
+    "pl": "Piekarnik",
+    "ru": "Духовка"
+  },
+  "refrigerator": {
+    "en": "Refrigerator",
+    "es": "Refrigerador",
+    "fr": "Réfrigérateur",
+    "de": "Kühlschrank",
+    "it": "Frigorifero",
+    "pl": "Lodówka",
+    "ru": "Холодильник"
+  },
+  "book": {
+    "en": "Book",
+    "es": "Libro",
+    "fr": "Livre",
+    "de": "Buch",
+    "it": "Libro",
+    "pl": "Książka",
+    "ru": "Книга"
+  },
+  "scissors": {
+    "en": "Scissors",
+    "es": "Tijeras",
+    "fr": "Ciseaux",
+    "de": "Schere",
+    "it": "Forbici",
+    "pl": "Nożyczki",
+    "ru": "Ножницы"
+  },
+  "clock": {
+    "en": "Clock",
+    "es": "Reloj",
+    "fr": "Horloge",
+    "de": "Uhr",
+    "it": "Orologio",
+    "pl": "Zegar",
+    "ru": "Часы"
+  },
+  "cell phone": {
+    "en": "Cell phone",
+    "es": "Teléfono celular",
+    "fr": "Téléphone portable",
+    "de": "Handy",
+    "it": "Cellulare",
+    "pl": "Telefon komórkowy",
+    "ru": "Сотовый телефон"
+  },
+  "toothbrush": {
+    "en": "Toothbrush",
+    "es": "Cepillo de dientes",
+    "fr": "Brosse à dents",
+    "de": "Zahnbürste",
+    "it": "Spazzolino",
+    "pl": "Szczoteczka do zębów",
+    "ru": "Зубная щетка"
+  },
+  "tv": {
+    "en": "The TV",
+    "es": "Televisión",
+    "fr": "Télévision",
+    "de": "Fernseher",
+    "it": "Televisione",
+    "pl": "Telewizor",
+    "ru": "Телевизор"
+  },
+  "sandwich": {
+    "en": "Sandwich",
+    "es": "Sándwich",
+    "fr": "Sandwich",
+    "de": "Sandwich",
+    "it": "Panino",
+    "pl": "Kanapka",
+    "ru": "Сэндвич"
+  },
+  "toaster": {
+    "en": "Toaster",
+    "es": "Tostadora",
+    "fr": "Grille-pain",
+    "de": "Toaster",
+    "it": "Tostapane",
+    "pl": "Toster",
+    "ru": "Тостер"
+  },
+  "sink": {
+    "en": "Sink",
+    "es": "Fregadero",
+    "fr": "Évier",
+    "de": "Spüle",
+    "it": "Lavello",
+    "pl": "Zlew",
+    "ru": "Раковина"
+  },
+  "vase": {
+    "en": "Vase",
+    "es": "Jarrón",
+    "fr": "Vase",
+    "de": "Vase",
+    "it": "Vaso",
+    "pl": "Wazon",
+    "ru": "Ваза"
+  },
+  "teddy bear": {
+    "en": "Teddy bear",
+    "es": "Osito de peluche",
+    "fr": "Ours en peluche",
+    "de": "Teddybär",
+    "it": "Orsacchiotto",
+    "pl": "Miś pluszowy",
+    "ru": "Плюшевый медведь"
+  },
+  "hair drier": {
+    "en": "Hair drier",
+    "es": "Secador de pelo",
+    "fr": "Sèche-cheveux",
+    "de": "Haartrockner",
+    "it": "Asciugacapelli",
+    "pl": "Suszarka do włosów",
+    "ru": "Фен"
+  }
+}
