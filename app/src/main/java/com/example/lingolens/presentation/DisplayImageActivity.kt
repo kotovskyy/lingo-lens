@@ -1,5 +1,6 @@
 package com.example.lingolens.presentation
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -52,11 +53,12 @@ class DisplayImageActivity: ComponentActivity() {
 
     private lateinit var yoloAPI: YoloAPI
     private lateinit var selectedLanguageCode: String
+    private lateinit var imageUri: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val imageUri = intent.getStringExtra("image_uri")
+        imageUri = intent.getStringExtra("image_uri").toString()
         val confidenceThreshold = intent.getFloatExtra("confidence_threshold", 0.5f)
         val iouThreshold = intent.getFloatExtra("iou_threshold", 0.5f)
 
@@ -135,6 +137,11 @@ class DisplayImageActivity: ComponentActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        clearCache(this)
+    }
+
     private fun loadImageFromUri(uri: Uri): Bitmap? {
         return try {
             contentResolver.openInputStream(uri)?.use { inputStream ->
@@ -191,6 +198,15 @@ class DisplayImageActivity: ComponentActivity() {
         }
         
         return mutableBitmap
+    }
+
+    private fun clearCache(context: Context) {
+        val cacheDir = context.cacheDir
+        cacheDir.listFiles()?.forEach { file ->
+            if (file.name.startsWith("captured_image") && file.name.endsWith(".jpg")) {
+                file.delete()
+            }
+        }
     }
 }
 
