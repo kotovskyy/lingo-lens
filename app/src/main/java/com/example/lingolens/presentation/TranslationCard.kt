@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -53,7 +54,6 @@ import com.example.lingolens.translateAPI.DefinitionDetail
 import com.example.lingolens.translateAPI.Language
 import com.example.lingolens.translateAPI.TranslationResponse
 import com.example.lingolens.translateAPI.TranslatorInstance
-import com.example.lingolens.translateAPI.appLanguages
 import com.example.lingolens.translateAPI.translationLanguages
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -147,8 +147,8 @@ fun TranslationCard(
             ) {
                 if (!isOnline(context)){
                     ErrorTranslationCard(
-                        title = "No internet connection",
-                        description = "Translation is not be available",
+                        title = stringResource(id = R.string.no_internet_connection),
+                        description = stringResource(id = R.string.translation_not_available),
                         onClose = onClose
                     )
                 } else {
@@ -182,7 +182,7 @@ fun TranslationCard(
                                     .fillMaxWidth()
                                     .padding(horizontal = 20.dp)
                             ) {
-                                Text(text = "Word: $word", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                                Text(text = stringResource(id = R.string.word) + ": $word", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                                 if (translation.isNotEmpty()){
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
@@ -190,7 +190,7 @@ fun TranslationCard(
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text(
-                                            text = "Translation: $translation",
+                                            text = stringResource(id = R.string.translation) + ": $translation",
                                             fontWeight = FontWeight.Bold,
                                             style = MaterialTheme.typography.bodyLarge,
                                             modifier = Modifier.weight(1f),
@@ -216,7 +216,7 @@ fun TranslationCard(
                                         .height(10.dp)
                                         .fillMaxWidth())
                                     Text(
-                                        text = "Transcription: $transcription",
+                                        text = stringResource(id = R.string.transcription) + ": $transcription",
                                         fontWeight = FontWeight.Normal,
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurface
@@ -224,7 +224,7 @@ fun TranslationCard(
                                 }
                                 if (wordDescription.isNotEmpty()){
                                     Text(
-                                        text = "Description: $wordDescription",
+                                        text = stringResource(id = R.string.description) + ": $wordDescription",
                                         fontWeight = FontWeight.Light,
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurface
