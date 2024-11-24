@@ -3,6 +3,7 @@ package com.example.lingolens
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -43,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -54,7 +56,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
-            var hasCameraPermission by remember { mutableStateOf(false) }
+            var hasCameraPermission by remember {
+                mutableStateOf(
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                )
+            }
 
             val cameraPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission(),
@@ -69,64 +75,13 @@ class MainActivity : ComponentActivity() {
 
             LingoLensTheme {
                 Box(modifier = Modifier.fillMaxSize()){
-                    if (hasCameraPermission) {
-                        AppNavigation()
+                    if (!hasCameraPermission) {
+                        PermissionsScreen(
+                            context = context,
+                            onRetry = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) }
+                        )
                     } else {
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp, vertical = 20.dp)
-                                .fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                            Spacer(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(15.dp))
-                            showPermissionDeniedMessage(
-                                context = context,
-                                onRetry = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) }
-                            )
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxHeight()
-                            ) {
-                                Button(
-                                    onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
-                                    colors = ButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.secondary,
-                                        contentColor = MaterialTheme.colorScheme.onSecondary,
-                                        Color.Transparent, Color.Transparent
-                                    ),
-                                    modifier = Modifier
-                                        .padding(vertical = 8.dp),
-                                    shape = RoundedCornerShape(10.dp),
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.try_again),
-                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.W600),
-                                        color = MaterialTheme.colorScheme.onSecondary,
-                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-                                    )
-                                }
-                                Text(
-                                    text = stringResource(id = R.string.or),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                                TextButton(onClick = {
-                                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                        data = Uri.fromParts("package", context.packageName, null)
-                                    }
-                                    context.startActivity(intent)
-                                }) {
-                                    Text(
-                                        text = stringResource(id = R.string.open_settings),
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.W500),
-                                        color = MaterialTheme.colorScheme.onErrorContainer
-                                    )
-                                }
-                            }
-                        }
+                        AppNavigation()
                     }
                 }
             }
@@ -144,6 +99,65 @@ fun AppNavigation(){
         }
         composable(route = Video.route){
             Video.screen(navController)
+        }
+    }
+}
+
+@Composable
+fun PermissionsScreen(context: Context, onRetry: () -> Unit){
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 8.dp, vertical = 20.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(15.dp))
+        showPermissionDeniedMessage(
+            context = context,
+            onRetry = onRetry
+        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxHeight()
+        ) {
+            Button(
+                onClick = onRetry,
+                colors = ButtonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                    Color.Transparent, Color.Transparent
+                ),
+                modifier = Modifier
+                    .padding(vertical = 8.dp),
+                shape = RoundedCornerShape(10.dp),
+            ) {
+                Text(
+                    text = stringResource(id = R.string.try_again),
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.W600),
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                )
+            }
+            Text(
+                text = stringResource(id = R.string.or),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
+            TextButton(onClick = {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+                context.startActivity(intent)
+            }) {
+                Text(
+                    text = stringResource(id = R.string.open_settings),
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.W500),
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
         }
     }
 }
