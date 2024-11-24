@@ -66,7 +66,9 @@ fun TranslationCard(
 ) {
     val context = LocalContext.current
     val savedTranslationCode = getTranslationLanguage(context)
-    val defaultTranslationLanguage = translationLanguages.find { it.code == savedTranslationCode } ?: Language("nan", "Choose language")
+    val defaultTranslationLanguage = translationLanguages.find { it.code == savedTranslationCode } ?: Language("nan", stringResource(
+        id = R.string.choose_language
+    ))
     var translationLanguage by remember { mutableStateOf(defaultTranslationLanguage) }
 
     var tts by remember { mutableStateOf<TextToSpeech?>(null) }
