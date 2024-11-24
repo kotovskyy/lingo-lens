@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Lingo Lens</string>
+    <string name="choose_language">Choose a language</string>
+    <string name="start">Start</string>
+    <string name="take_picture">Take a picture</string>
+    <string name="confidence_threshold">Confidence threshold</string>
+    <string name="iou_threshold">IOU threshold</string>
+    <string name="word">Word</string>
+    <string name="translation">Translation</string>
+    <string name="transcription">Transcription</string>
+    <string name="description">Description</string>
+    <string name="cant_open_image">Cannot open the image</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="translation_not_available">Translation is not be available</string>
+    <string name="try_again">Try Again</string>
+    <string name="or">OR</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="camera_permission_required">Camera permission is required to use the application</string>
 </resources>

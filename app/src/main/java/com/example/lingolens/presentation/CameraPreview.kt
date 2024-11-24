@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
@@ -169,10 +170,10 @@ fun CameraPreview(
                 .padding(horizontal = 40.dp)
         ){
             SlidingSettings(showSettings = showSettings, onClick = { onSettingsShrink() }) {
-                SettingSlider(text = "Confidence threshold: ", value = confidenceThreshold) { value ->
+                SettingSlider(text = stringResource(id = R.string.confidence_threshold), value = confidenceThreshold) { value ->
                     confidenceThreshold = value
                 }
-                SettingSlider(text = "IOU threshold: ", value = iouThreshold) { value ->
+                SettingSlider(text = stringResource(id = R.string.iou_threshold), value = iouThreshold) { value ->
                     iouThreshold = value
                 }
             }
@@ -266,7 +267,8 @@ fun SlidingSettings(
                     disabledContainerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.24f),
                     disabledContentColor = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.24f)
                 ),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
                     .padding(top = 10.dp)
             ) {
                 Icon(
@@ -290,7 +292,7 @@ fun SettingSlider(
         modifier = Modifier.padding(16.dp)
     ) {
         Text(
-            text = text + String.format("%.2f", value),
+            text = text + ": "+ String.format("%.2f", value),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onTertiary,
             modifier = Modifier.padding(bottom = 5.dp)

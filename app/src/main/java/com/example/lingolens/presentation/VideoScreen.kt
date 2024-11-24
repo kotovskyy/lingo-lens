@@ -24,9 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lingolens.Home
+import com.example.lingolens.R
 
 
 @Composable
@@ -36,7 +38,7 @@ fun VideoScreen(navController: NavController?){
     Scaffold(
         topBar = {
             VideoScreenTopBar(
-                text = "Take a picture",
+                text = stringResource(id = R.string.take_picture),
                 onBackClick =  { navController?.navigate(Home.route) },
                 onSettingsClick = { showSettings = !showSettings }
             )

@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -101,14 +102,14 @@ class MainActivity : ComponentActivity() {
                                     shape = RoundedCornerShape(10.dp),
                                 ) {
                                     Text(
-                                        text = "Try Again",
+                                        text = stringResource(id = R.string.try_again),
                                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.W600),
                                         color = MaterialTheme.colorScheme.onSecondary,
                                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                                     )
                                 }
                                 Text(
-                                    text = "OR",
+                                    text = stringResource(id = R.string.or),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onErrorContainer
                                 )
@@ -119,7 +120,7 @@ class MainActivity : ComponentActivity() {
                                     context.startActivity(intent)
                                 }) {
                                     Text(
-                                        text = "Open Settings",
+                                        text = stringResource(id = R.string.open_settings),
                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.W500),
                                         color = MaterialTheme.colorScheme.onErrorContainer
                                     )
@@ -160,7 +161,7 @@ fun showPermissionDeniedMessage(
         shape = RoundedCornerShape(8.dp)
     ) {
         Text(
-            text = "Camera permission is required to use the application.",
+            text = stringResource(id = R.string.camera_permission_required),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onErrorContainer,
             modifier = Modifier.padding(vertical = 8.dp)

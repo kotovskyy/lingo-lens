@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lingo Lens</string>
+    <string name="choose_language">Wybierz język</string>
+    <string name="start">Start</string>
+    <string name="take_picture">Zrób zdjęcie</string>
+    <string name="confidence_threshold">Ogranieczenie dokładności:</string>
+    <string name="iou_threshold">Ograniczenie IOU:</string>
+    <string name="word">Słowo</string>
+    <string name="translation">Tłumaczenie</string>
+    <string name="transcription">Transkrypcja</string>
+    <string name="description">Opis</string>
+    <string name="cant_open_image">Nie udało się otworzyć obrazu</string>
+    <string name="no_internet_connection">Brak połączenia z internetem</string>
+    <string name="translation_not_available">"Tłumaczenie nie jest dostępne"</string>
+    <string name="try_again">Spróbój ponownie</string>
+    <string name="or">LUB</string>
+    <string name="open_settings">Otwórz ustawienia</string>
+    <string name="camera_permission_required">Pozwolenie na użycie Kamery jest wymagane do działania aplikacji</string>
+</resources>

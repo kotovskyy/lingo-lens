@@ -33,8 +33,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import com.example.lingolens.R
 import com.example.lingolens.detection.Labels
 import com.example.lingolens.detection.BoundingBox
 import com.example.lingolens.detection.YoloAPI
@@ -124,10 +126,10 @@ class DisplayImageActivity: ComponentActivity() {
                             }
                         }
                     } else {
-                        Text(text = "Couldn't open image")
+                        Text(text = stringResource(id = R.string.cant_open_image))
                     }
                 } else {
-                    Text(text = "Couldn't open image")
+                    Text(text = stringResource(id = R.string.cant_open_image))
                 }
             }
         }

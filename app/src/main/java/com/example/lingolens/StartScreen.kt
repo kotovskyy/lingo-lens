@@ -1,7 +1,9 @@
 package com.example.lingolens
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
@@ -50,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.lingolens.translateAPI.Language
 import com.example.lingolens.translateAPI.appLanguages
+import java.util.Locale
 
 @Composable
 fun StartButton(text: String, onClick: () -> Unit){
@@ -107,9 +111,10 @@ fun StartScreen(navController: NavController?){
     val savedLanguageCode = getSelectedLanguage(context)
     val defaultLanguage = appLanguages.find { it.code == savedLanguageCode } ?: appLanguages[0] // Default to English
     val selectedLanguage by remember { mutableStateOf(defaultLanguage) }
+    updateLocale(context, selectedLanguage.code)
 
     Scaffold(
-        topBar = { StartScreenTopBar(title = "Lingo Lens") },
+        topBar = { StartScreenTopBar(title = stringResource(id = R.string.app_name)) },
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.tertiary
     ) { paddingValues ->
@@ -130,18 +135,22 @@ fun StartScreen(navController: NavController?){
                     .padding(horizontal = 20.dp)
             ) {
                 Text(
-                    text = "Labels language:",
+                    text = stringResource(id = R.string.choose_language),
                     color = MaterialTheme.colorScheme.onTertiaryContainer,
                     style = MaterialTheme.typography.headlineSmall
                 )
                 LanguagePicker(
                     languages = appLanguages,
                     defaultLanguage = selectedLanguage,
-                    onLanguageSelected = { language -> saveSelectedLanguage(context, language.code) }
+                    onLanguageSelected = { language ->
+                        saveSelectedLanguage(context, language.code)
+                        updateLocale(context, language.code)
+                        (context as? Activity)?.recreate()
+                    }
                 )
                 Spacer(modifier = Modifier.height(25.dp))
                 StartButton(
-                    text = "Start",
+                    text = stringResource(id = R.string.start),
                     onClick = { navController?.navigate(Video.route) }
                 )
             }
@@ -231,6 +240,16 @@ fun saveSelectedLanguage(context: Context, languageCode: String){
     sharedPreferences.edit().putString("selected_language", languageCode).apply()
 }
 
+fun updateLocale(context: Context, languageCode: String) {
+    val locale = Locale(languageCode)
+    Locale.setDefault(locale)
+    val config = Configuration(context.resources.configuration)
+    config.setLocale(locale)
+    context.createConfigurationContext(config)
+
+    // Apply changes globally
+    context.resources.updateConfiguration(config, context.resources.displayMetrics)
+}
 
 @Preview
 @Composable
