@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.os.LocaleList
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.LocaleListCompat
 import androidx.navigation.NavController
 import com.example.lingolens.translateAPI.Language
 import com.example.lingolens.translateAPI.appLanguages
@@ -109,9 +112,10 @@ fun StartScreen(navController: NavController?){
     val context = LocalContext.current
 
     val savedLanguageCode = getSelectedLanguage(context)
-    val defaultLanguage = appLanguages.find { it.code == savedLanguageCode } ?: appLanguages[0] // Default to English
+    val defaultLanguage = appLanguages.find { it.code == savedLanguageCode }
+        ?: appLanguages.find { it.code == Locale.getDefault().language } // If possible, default to system lang
+        ?: appLanguages[0] // Default to English
     val selectedLanguage by remember { mutableStateOf(defaultLanguage) }
-    updateLocale(context, selectedLanguage.code)
 
     Scaffold(
         topBar = { StartScreenTopBar(title = stringResource(id = R.string.app_name)) },
@@ -144,8 +148,12 @@ fun StartScreen(navController: NavController?){
                     defaultLanguage = selectedLanguage,
                     onLanguageSelected = { language ->
                         saveSelectedLanguage(context, language.code)
-                        updateLocale(context, language.code)
-                        (context as? Activity)?.recreate()
+                        updateAppLocale(language.code)
+                        AppCompatDelegate.setApplicationLocales(
+                            LocaleListCompat.forLanguageTags(
+                                language.code
+                            )
+                        )
                     }
                 )
                 Spacer(modifier = Modifier.height(25.dp))
@@ -232,7 +240,7 @@ fun LanguagePicker(
 
 fun getSelectedLanguage(context: Context): String? {
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
-    return sharedPreferences.getString("selected_language", null)  // Return null if not found
+    return sharedPreferences.getString("selected_language", "en")
 }
 
 fun saveSelectedLanguage(context: Context, languageCode: String){
@@ -240,15 +248,9 @@ fun saveSelectedLanguage(context: Context, languageCode: String){
     sharedPreferences.edit().putString("selected_language", languageCode).apply()
 }
 
-fun updateLocale(context: Context, languageCode: String) {
+fun updateAppLocale(languageCode: String) {
     val locale = Locale(languageCode)
-    Locale.setDefault(locale)
-    val config = Configuration(context.resources.configuration)
-    config.setLocale(locale)
-    context.createConfigurationContext(config)
-
-    // Apply changes globally
-    context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(locale.toLanguageTag()))
 }
 
 @Preview

@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -41,6 +42,7 @@ import com.example.lingolens.R
 import com.example.lingolens.detection.Labels
 import com.example.lingolens.detection.BoundingBox
 import com.example.lingolens.detection.YoloAPI
+import com.example.lingolens.getSelectedLanguage
 import com.example.lingolens.translateAPI.LabelTranslator
 import com.example.lingolens.translateAPI.Language
 import com.example.lingolens.translateAPI.TranslatorInstance
@@ -49,7 +51,7 @@ import com.example.lingolens.ui.theme.LingoLensTheme
 import kotlin.math.max
 import kotlin.math.min
 
-class DisplayImageActivity: ComponentActivity() {
+class DisplayImageActivity: AppCompatActivity() {
 
     private lateinit var yoloAPI: YoloAPI
     private lateinit var selectedLanguageCode: String
@@ -62,8 +64,7 @@ class DisplayImageActivity: ComponentActivity() {
         val confidenceThreshold = intent.getFloatExtra("confidence_threshold", 0.5f)
         val iouThreshold = intent.getFloatExtra("iou_threshold", 0.5f)
 
-        val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        selectedLanguageCode = sharedPreferences.getString("selected_language", "en") ?: "en"
+        selectedLanguageCode = getSelectedLanguage(this).toString()
 
         val labelsTranslator = LabelTranslator(this)
 
