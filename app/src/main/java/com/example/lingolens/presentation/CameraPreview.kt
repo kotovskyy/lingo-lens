@@ -1,10 +1,12 @@
 package com.example.lingolens.presentation
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.util.Log
 import android.view.View
+import androidx.activity.ComponentActivity.MODE_PRIVATE
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -64,6 +66,7 @@ import androidx.core.content.FileProvider
 import com.example.lingolens.R
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -89,7 +92,6 @@ fun CameraPreview(
     val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     var cameraSelector by remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
     val cameraProvider = remember { cameraProviderFuture.get() }
-
     val previewView = remember {
         PreviewView(context).apply {
             implementationMode = PreviewView.ImplementationMode.COMPATIBLE
@@ -135,6 +137,7 @@ fun CameraPreview(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.BottomCenter
     ) {
+        Log.d("LocaleDebug", "MainActivity current locale: ${context.resources.configuration.locales[0]}")
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
