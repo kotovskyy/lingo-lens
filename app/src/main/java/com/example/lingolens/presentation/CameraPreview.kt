@@ -16,10 +16,14 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseOutBounce
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
@@ -29,10 +33,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -64,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import com.example.lingolens.R
+import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Locale
@@ -85,6 +92,7 @@ fun CameraPreview(
 
     val alphaAnimation = remember { Animatable(1f) }
     val flashAnimation = remember { Animatable(0f) }
+    val animatedVisibilityState = remember { MutableTransitionState(false).apply { targetState = true } }
 
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -137,7 +145,6 @@ fun CameraPreview(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.BottomCenter
     ) {
-        Log.d("LocaleDebug", "MainActivity current locale: ${context.resources.configuration.locales[0]}")
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
@@ -188,36 +195,63 @@ fun CameraPreview(
                     .padding(bottom = 15.dp)
             ) {
                 if (!isImageBeingCaptured){
-                    CameraInterfaceButton(
-                        onClick = {
-                            cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-                                CameraSelector.DEFAULT_FRONT_CAMERA
-                            } else {
-                                CameraSelector.DEFAULT_BACK_CAMERA
-                            }
+                    AnimatedVisibility(
+                        visibleState = animatedVisibilityState,
+                        enter = fadeIn(animationSpec = tween(1000)) + slideInVertically(
+                            initialOffsetY = { it },
+                            animationSpec = tween(1000, easing = EaseOutBounce)
+                        )
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.BottomCenter,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                                    shape = RoundedCornerShape(24.dp)
+                                )
+                                .padding(vertical = 8.dp, horizontal = 16.dp)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                CameraInterfaceButton(
+                                    onClick = {
+                                        cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                            CameraSelector.DEFAULT_FRONT_CAMERA
+                                        } else {
+                                            CameraSelector.DEFAULT_BACK_CAMERA
+                                        }
 
-                            cameraProvider.unbindAll()
-                            cameraProvider.bindToLifecycle(
-                                lifecycleOwner,
-                                cameraSelector,
-                                preview,
-                                imageCapture
-                            )
-                        },
-                        iconID = R.drawable.flip_camera_24,
-                        description = "Flip Camera",
-                    )
-                    CameraInterfaceButton(
-                        onClick = {
-                            onSettingsShrink()
-                            isImageBeingCaptured = true
-                            takePhoto(context, imageCapture, cameraExecutor, previewView, confidenceThreshold, iouThreshold) {
-                                isImageBeingCaptured = false
+                                        cameraProvider.unbindAll()
+                                        cameraProvider.bindToLifecycle(
+                                            lifecycleOwner,
+                                            cameraSelector,
+                                            preview,
+                                            imageCapture
+                                        )
+                                    },
+                                    iconID = R.drawable.flip_camera_24,
+                                    description = "Flip Camera"
+                                )
+                                Spacer(modifier = Modifier.width(15.dp))
+                                CameraInterfaceButton(
+                                    onClick = {
+                                        onSettingsShrink()
+                                        isImageBeingCaptured = true
+                                        takePhoto(context, imageCapture, cameraExecutor, previewView, confidenceThreshold, iouThreshold) {
+                                            isImageBeingCaptured = false
+                                        }
+                                    },
+                                    iconID = R.drawable.photo_camera_24,
+                                    description = "Take Photo"
+                                )
                             }
-                        },
-                        iconID = R.drawable.photo_camera_24,
-                        description = "Take Photo"
-                    )
+                        }
+                    }
                 }
             }
         }
@@ -256,10 +290,14 @@ fun SlidingSettings(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .background(Color.Transparent)
+                .clip(RoundedCornerShape(16.dp))
+                .background(
+                    color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha=0.8f),
+                    shape = RoundedCornerShape(16.dp)
+                )
                 .border(
-                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
-                    shape = RoundedCornerShape(10.dp)
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiaryContainer),
+                    shape = RoundedCornerShape(16.dp)
                 )
         ) {
             IconButton(
@@ -297,7 +335,7 @@ fun SettingSlider(
         Text(
             text = text + ": "+ String.format("%.2f", value),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onTertiary,
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
             modifier = Modifier.padding(bottom = 5.dp)
         )
         Slider(
@@ -324,21 +362,50 @@ fun CameraInterfaceButton(
     onClick: () -> Unit,
     iconID: Int,
     description: String = ""
-){
+) {
+    var isAnimating by remember { mutableStateOf(false) }
+
+    // Animate scaling and opacity when clicked
+    val scale by animateFloatAsState(
+        targetValue = if (isAnimating) 1.2f else 1f,
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+    )
+
+    val alpha by animateFloatAsState(
+        targetValue = if (isAnimating) 0.8f else 1f,
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+    )
+
     IconButton(
-        onClick = { onClick() },
+        onClick = {
+            isAnimating = true
+            onClick()
+        },
         modifier = Modifier
             .padding(15.dp)
             .clip(RoundedCornerShape(50.dp))
             .background(MaterialTheme.colorScheme.tertiary)
-            .padding(12.dp),
-    ){
+            .padding(12.dp)
+            .graphicsLayer(
+                scaleX = scale,
+                scaleY = scale,
+                alpha = alpha
+            )
+    ) {
         Icon(
             painter = painterResource(id = iconID),
             contentDescription = description,
             tint = MaterialTheme.colorScheme.onTertiary,
             modifier = Modifier.size(48.dp)
         )
+    }
+
+    // Reset animation state after the animation completes
+    LaunchedEffect(isAnimating) {
+        if (isAnimating) {
+            delay(300)
+            isAnimating = false
+        }
     }
 }
 
