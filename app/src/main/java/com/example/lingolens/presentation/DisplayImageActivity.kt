@@ -15,8 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +39,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
@@ -80,6 +85,7 @@ class DisplayImageActivity: AppCompatActivity() {
                 if (imageUri != null) {
                     val bitmap = loadImageFromUri(Uri.parse(imageUri))
                     if (bitmap != null) {
+                        val context = LocalContext.current
                         var detectedBitmap by remember { mutableStateOf(bitmap) }
                         var translatedLabels by remember { mutableStateOf(emptyList<String>()) }
                         var showTranslationCard by remember { mutableStateOf(false) }
@@ -100,7 +106,9 @@ class DisplayImageActivity: AppCompatActivity() {
                             )
 
                             translationLanguages = emptyList<Language>()
-                            translationLanguages = TranslatorInstance.fetchSupportedLanguages()!!
+                            if (isOnline(context)) {
+                                translationLanguages = TranslatorInstance.fetchSupportedLanguages()!!
+                            }
                         }
 
                         Box(
@@ -129,10 +137,30 @@ class DisplayImageActivity: AppCompatActivity() {
                             }
                         }
                     } else {
-                        Text(text = stringResource(id = R.string.cant_open_image))
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(15.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.cant_open_image),
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 } else {
-                    Text(text = stringResource(id = R.string.cant_open_image))
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(15.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.cant_open_image),
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
@@ -227,8 +255,8 @@ fun DisplayImage(originalBitmap: Bitmap, bboxBitmap: Bitmap, boxes: List<Boundin
         bitmap = originalBitmap.asImageBitmap(),
         contentDescription = null,
         modifier = Modifier
-                .fillMaxSize()
-                .blur(10.dp),
+            .fillMaxSize()
+            .blur(10.dp),
         contentScale = ContentScale.Crop
     )
 
@@ -254,16 +282,28 @@ fun DisplayImage(originalBitmap: Bitmap, bboxBitmap: Bitmap, boxes: List<Boundin
                     onTap = { tapOffset: Offset ->
                         val maxWidth = bboxBitmap.width
                         val maxHeight = bboxBitmap.height
-                        val bitmapYOffset = (imageSize.height - maxHeight)/2
+                        val bitmapYOffset = (imageSize.height - maxHeight) / 2
 
                         for (box in sortedBoxes) {
-                            val minX = max(box.centerX * bboxBitmap.width - box.width * bboxBitmap.width / 2, 0f)
-                            val minY = max(box.centerY * bboxBitmap.height - box.height * bboxBitmap.height / 2 + bitmapYOffset, 0f)
+                            val minX = max(
+                                box.centerX * bboxBitmap.width - box.width * bboxBitmap.width / 2,
+                                0f
+                            )
+                            val minY = max(
+                                box.centerY * bboxBitmap.height - box.height * bboxBitmap.height / 2 + bitmapYOffset,
+                                0f
+                            )
 
-                            val maxX = min(box.centerX * bboxBitmap.width + box.width * bboxBitmap.width / 2, maxWidth.toFloat())
-                            val maxY = min(box.centerY * bboxBitmap.height + box.height * bboxBitmap.height / 2 + bitmapYOffset, maxHeight.toFloat())
+                            val maxX = min(
+                                box.centerX * bboxBitmap.width + box.width * bboxBitmap.width / 2,
+                                maxWidth.toFloat()
+                            )
+                            val maxY = min(
+                                box.centerY * bboxBitmap.height + box.height * bboxBitmap.height / 2 + bitmapYOffset,
+                                maxHeight.toFloat()
+                            )
 
-                            if (tapOffset.x in minX..maxX && tapOffset.y in minY..maxY){
+                            if (tapOffset.x in minX..maxX && tapOffset.y in minY..maxY) {
                                 onBoxClicked(box)
                                 break
                             }
@@ -272,9 +312,9 @@ fun DisplayImage(originalBitmap: Bitmap, bboxBitmap: Bitmap, boxes: List<Boundin
                 )
             }
             .onGloballyPositioned { layoutCoordinates ->
-            // Capture the size of the Image composable after it is rendered
-            imageSize = layoutCoordinates.size.toSize()
-        },
+                // Capture the size of the Image composable after it is rendered
+                imageSize = layoutCoordinates.size.toSize()
+            },
         contentScale = ContentScale.Fit
     )
 }

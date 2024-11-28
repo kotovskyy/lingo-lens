@@ -138,11 +138,11 @@ fun TranslationCard(
                     .padding(16.dp)
                     .border(
                         2.dp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = MaterialTheme.colorScheme.tertiary,
                         shape = RoundedCornerShape(25.dp)
                     )
                     .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                        color = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(25.dp)
                     ),
                 elevation = CardDefaults.cardElevation(0.dp)
@@ -302,7 +302,7 @@ fun CloseCardButton(
     IconButton(
         onClick = onClose,
         modifier = Modifier.background(
-            color = MaterialTheme.colorScheme.secondary,
+            color = MaterialTheme.colorScheme.tertiary,
             shape = RoundedCornerShape(50.dp)
         )
     ) {
