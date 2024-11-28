@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity.MODE_PRIVATE
@@ -242,7 +243,7 @@ fun CameraPreview(
                                     onClick = {
                                         onSettingsShrink()
                                         isImageBeingCaptured = true
-                                        takePhoto(context, imageCapture, cameraExecutor, previewView, confidenceThreshold, iouThreshold) {
+                                        takePhoto(context, imageCapture, cameraExecutor, previewView, confidenceThreshold, iouThreshold, cameraSelector) {
                                             isImageBeingCaptured = false
                                         }
                                     },
@@ -416,6 +417,7 @@ fun takePhoto(
     view: View,
     confidenceThreshold: Float,
     iouThreshold: Float,
+    cameraSelector: CameraSelector,
     onFinish: () -> Unit
 ){
     imageCapture.takePicture(
@@ -427,7 +429,13 @@ fun takePhoto(
                 val rotatedBitmap = rotateBitmapIfRequired(bitmap, rotationDegrees)
                 image.close()
 
-                val scaledBitmap = scaleCapturedImage(rotatedBitmap, view)
+                val finalBitmap = if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
+                    mirrorBitmap(rotatedBitmap)
+                } else {
+                    rotatedBitmap
+                }
+
+                val scaledBitmap = scaleCapturedImage(finalBitmap, view)
                 // Save bitmap to temporary file
                 val tempFile = createTempImageFile(context, scaledBitmap)
                 tempFile?.let {
@@ -458,6 +466,10 @@ fun takePhoto(
     )
 }
 
+fun mirrorBitmap(bitmap: Bitmap): Bitmap {
+    val matrix = Matrix().apply { postScale(-1f, 1f) } // Flip horizontally
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+}
 
 fun scaleCapturedImage(bitmap: Bitmap, viewFinder: View): Bitmap {
     val viewWidth = viewFinder.width
