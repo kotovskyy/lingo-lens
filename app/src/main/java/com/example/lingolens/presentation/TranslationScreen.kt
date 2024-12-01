@@ -59,7 +59,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
-fun TranslationCard(
+fun TranslationScreen(
     word: String,
     sourceLangCode: String,
     onClose: () -> Unit

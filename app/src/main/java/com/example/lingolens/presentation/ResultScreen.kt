@@ -90,7 +90,7 @@ fun ResultScreen(
         // Show the TranslationCard when a bounding box is clicked
         if (showTranslationCard && (selectedBoundingBox != null)) {
             Log.d("CARD CREATION", "${selectedBoundingBox!!.classID}")
-            TranslationCard(
+            TranslationScreen(
                 word = labelsTranslator.getTranslatedLabel(Labels.LABELS.get(selectedBoundingBox!!.classID), selectedLanguageCode),
                 sourceLangCode = selectedLanguageCode,
                 onClose = {
