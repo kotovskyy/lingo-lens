@@ -79,7 +79,9 @@ class MainActivity : AppCompatActivity() {
             )
 
             LaunchedEffect(Unit) {
-                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                if (!hasCameraPermission){
+                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
             }
 
             LingoLensTheme {
