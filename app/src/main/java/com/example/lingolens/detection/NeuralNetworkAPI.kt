@@ -34,23 +34,19 @@ class YOLO(
     fun analyze(bitmap: Bitmap) {
         val tensorImage = TensorImage.fromBitmap(bitmap)
         val processedImage = imageProcessor.process(tensorImage)
-        // Convert processed image to FloatBuffer
         val inputBuffer = processedImage.buffer.asFloatBuffer()
-        // Prepare output buffer
         val outputBuffer = Array(1) { Array(6300) { FloatArray(85) } }
-        // Run inference
         interpreter.allocateTensors()
         interpreter.run(inputBuffer, outputBuffer)
-        // Process output
         processModelOutput(outputBuffer)
     }
 
     private fun processModelOutput(outputBuffer: Array<Array<FloatArray>>) {
         val boxes = ArrayList<BoundingBox>()
         for (i in outputBuffer[0].indices) {
-            val confidence = outputBuffer[0][i][4] // Confidence score
-            if (confidence > confidenceThreshold) { // Threshold for confidence
-                val xCenter = outputBuffer[0][i][0] // Bounding box coordinates
+            val confidence = outputBuffer[0][i][4]
+            if (confidence > confidenceThreshold) {
+                val xCenter = outputBuffer[0][i][0]
                 val yCenter = outputBuffer[0][i][1]
                 val width = outputBuffer[0][i][2]
                 val height = outputBuffer[0][i][3]
