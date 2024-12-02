@@ -2,7 +2,6 @@ package com.example.lingolens.detection
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -14,7 +13,7 @@ import java.nio.channels.FileChannel
 import kotlin.math.max
 import kotlin.math.min
 
-class YoloAPI(
+class YOLO(
     private val context: Context,
     private val modelFilename: String,
     private val confidenceThreshold: Float = 0.4f,

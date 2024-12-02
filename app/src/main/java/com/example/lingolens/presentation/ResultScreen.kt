@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.lingolens.detection.BoundingBox
 import com.example.lingolens.detection.Labels
-import com.example.lingolens.detection.YoloAPI
+import com.example.lingolens.detection.YOLO
 import com.example.lingolens.translateAPI.LabelTranslator
 import com.example.lingolens.translateAPI.Language
 import com.example.lingolens.translateAPI.TranslatorInstance
@@ -45,7 +45,7 @@ import kotlin.math.min
 @Composable
 fun ResultScreen(
     bitmap: Bitmap,
-    yoloAPI: YoloAPI,
+    yolo: YOLO,
     labelsTranslator: LabelTranslator,
     selectedLanguageCode: String
 ) {
@@ -57,15 +57,15 @@ fun ResultScreen(
 
 
     LaunchedEffect(Unit) {
-        yoloAPI.analyze(bitmap)
-        val boxes = yoloAPI.boundingBoxes
+        yolo.analyze(bitmap)
+        val boxes = yolo.boundingBoxes
 
         translatedLabels = boxes.map {
             labelsTranslator.getTranslatedLabel(Labels.LABELS.get(it.classID), selectedLanguageCode)
         }
         detectedBitmap = drawBoundingBoxes(
             bitmap = bitmap,
-            boxes = yoloAPI.boundingBoxes,
+            boxes = yolo.boundingBoxes,
             labels = translatedLabels
         )
 
@@ -81,7 +81,7 @@ fun ResultScreen(
         DisplayImage(
             originalBitmap = bitmap,
             bboxBitmap = detectedBitmap,
-            boxes = yoloAPI.boundingBoxes
+            boxes = yolo.boundingBoxes
         ) { bbox ->
             selectedBoundingBox = bbox
             showTranslationCard = true

@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.res.stringResource
 import com.example.lingolens.R
 import com.example.lingolens.detection.BoundingBox
-import com.example.lingolens.detection.YoloAPI
+import com.example.lingolens.detection.YOLO
 import com.example.lingolens.getSelectedLanguage
 import com.example.lingolens.translateAPI.LabelTranslator
 import com.example.lingolens.ui.theme.LingoLensTheme
@@ -22,7 +22,7 @@ import kotlin.math.min
 
 class DisplayImageActivity: AppCompatActivity() {
 
-    private lateinit var yoloAPI: YoloAPI
+    private lateinit var yolo: YOLO
     private lateinit var selectedLanguageCode: String
     private lateinit var imageUri: String
 
@@ -37,7 +37,7 @@ class DisplayImageActivity: AppCompatActivity() {
 
         val labelsTranslator = LabelTranslator(this)
 
-        yoloAPI = YoloAPI(
+        yolo = YOLO(
             context = this,
             modelFilename = "yolov5.tflite",
             confidenceThreshold = confidenceThreshold,
@@ -50,7 +50,7 @@ class DisplayImageActivity: AppCompatActivity() {
                 if (bitmap != null) {
                     ResultScreen(
                         bitmap = bitmap,
-                        yoloAPI = yoloAPI,
+                        yolo = yolo,
                         labelsTranslator = labelsTranslator,
                         selectedLanguageCode = selectedLanguageCode
                     )
