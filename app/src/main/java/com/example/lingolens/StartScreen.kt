@@ -198,11 +198,6 @@ fun StartScreen(navController: NavController?) {
                         onLanguageSelected = { language ->
                             saveSelectedLanguage(context, language.code)
                             updateAppLocale(language.code)
-                            AppCompatDelegate.setApplicationLocales(
-                                LocaleListCompat.forLanguageTags(
-                                    language.code
-                                )
-                            )
                         }
                     )
                 }
