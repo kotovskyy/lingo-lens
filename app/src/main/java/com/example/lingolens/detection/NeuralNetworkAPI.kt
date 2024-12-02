@@ -56,8 +56,7 @@ class YOLO(
                 boxes.add(BoundingBox(xCenter, yCenter, width, height, confidence, classId))
             }
         }
-
-        boundingBoxes = applyNMS(boxes.toList(), confidenceThreshold, iouThreshold)
+        boundingBoxes = applyNMS(boxes.toMutableList(), iouThreshold)
     }
 
     private fun loadModelFile(context: Context, filename: String): MappedByteBuffer {
@@ -69,31 +68,22 @@ class YOLO(
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
-    private fun applyNMS(
-        boxes: List<BoundingBox>,
-        confidenceThreshold: Float = 0.6f,
-        iouThreshold: Float = 0.5f
-    ) : ArrayList<BoundingBox> {
-        val filteredBoxes = boxes.filter { it.confidence > confidenceThreshold }.toMutableList()
-        filteredBoxes.sortByDescending { it.confidence }
-
+    private fun applyNMS(boxes: MutableList<BoundingBox>, iouThreshold: Float = 0.5f) : ArrayList<BoundingBox> {
+        boxes.sortByDescending { it.confidence }
         val resultBoxes = ArrayList<BoundingBox>()
-
-        while (filteredBoxes.isNotEmpty()) {
-            val bestBox = filteredBoxes.removeAt(0)
+        while (boxes.isNotEmpty()) {
+            val bestBox = boxes.removeAt(0)
             resultBoxes.add(bestBox)
-
             val boxesToKeep = ArrayList<BoundingBox>()
-            for (box in filteredBoxes){
+            for (box in boxes){
                 val iou = calculateIoU(bestBox, box)
                 if (iou < iouThreshold){
                     boxesToKeep.add(box)
                 }
             }
-            filteredBoxes.clear()
-            filteredBoxes.addAll(boxesToKeep)
+            boxes.clear()
+            boxes.addAll(boxesToKeep)
         }
-
         return resultBoxes
     }
 
