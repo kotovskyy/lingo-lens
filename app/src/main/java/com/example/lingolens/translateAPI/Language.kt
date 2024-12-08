@@ -1,6 +1,9 @@
 package com.example.lingolens.translateAPI
 
-data class Language(val code: String, val name: String)
+data class Language(
+    val code: String,
+    val name: String
+)
 
 val appLanguages = listOf(
     Language("en", "English"),
