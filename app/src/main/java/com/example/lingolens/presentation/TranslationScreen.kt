@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
-import com.example.lingolens.LanguagePicker
+import com.example.lingolens.LanguageSelector
 import com.example.lingolens.R
 import com.example.lingolens.translateAPI.DefinitionDetail
 import com.example.lingolens.translateAPI.Language
@@ -285,7 +285,7 @@ fun TranslationHeader(
         verticalAlignment = Alignment.Top,
         modifier = Modifier.fillMaxWidth()
     ) {
-        LanguagePicker(
+        LanguageSelector(
             languages = translationLanguages,
             defaultLanguage = defaultLanguage,
             onLanguageSelected = { language -> onLanguageSelected(language) },

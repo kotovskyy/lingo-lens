@@ -2,7 +2,6 @@ package com.example.lingolens.detection
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -14,7 +13,7 @@ import java.nio.channels.FileChannel
 import kotlin.math.max
 import kotlin.math.min
 
-class YoloAPI(
+class YOLO(
     private val context: Context,
     private val modelFilename: String,
     private val confidenceThreshold: Float = 0.4f,
@@ -35,23 +34,19 @@ class YoloAPI(
     fun analyze(bitmap: Bitmap) {
         val tensorImage = TensorImage.fromBitmap(bitmap)
         val processedImage = imageProcessor.process(tensorImage)
-        // Convert processed image to FloatBuffer
         val inputBuffer = processedImage.buffer.asFloatBuffer()
-        // Prepare output buffer
         val outputBuffer = Array(1) { Array(6300) { FloatArray(85) } }
-        // Run inference
         interpreter.allocateTensors()
         interpreter.run(inputBuffer, outputBuffer)
-        // Process output
         processModelOutput(outputBuffer)
     }
 
     private fun processModelOutput(outputBuffer: Array<Array<FloatArray>>) {
         val boxes = ArrayList<BoundingBox>()
         for (i in outputBuffer[0].indices) {
-            val confidence = outputBuffer[0][i][4] // Confidence score
-            if (confidence > confidenceThreshold) { // Threshold for confidence
-                val xCenter = outputBuffer[0][i][0] // Bounding box coordinates
+            val confidence = outputBuffer[0][i][4]
+            if (confidence > confidenceThreshold) {
+                val xCenter = outputBuffer[0][i][0]
                 val yCenter = outputBuffer[0][i][1]
                 val width = outputBuffer[0][i][2]
                 val height = outputBuffer[0][i][3]
@@ -61,8 +56,7 @@ class YoloAPI(
                 boxes.add(BoundingBox(xCenter, yCenter, width, height, confidence, classId))
             }
         }
-
-        boundingBoxes = applyNMS(boxes.toList(), confidenceThreshold, iouThreshold)
+        boundingBoxes = applyNMS(boxes.toMutableList(), iouThreshold)
     }
 
     private fun loadModelFile(context: Context, filename: String): MappedByteBuffer {
@@ -74,31 +68,22 @@ class YoloAPI(
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
-    private fun applyNMS(
-        boxes: List<BoundingBox>,
-        confidenceThreshold: Float = 0.6f,
-        iouThreshold: Float = 0.5f
-    ) : ArrayList<BoundingBox> {
-        val filteredBoxes = boxes.filter { it.confidence > confidenceThreshold }.toMutableList()
-        filteredBoxes.sortByDescending { it.confidence }
-
+    private fun applyNMS(boxes: MutableList<BoundingBox>, iouThreshold: Float = 0.5f) : ArrayList<BoundingBox> {
+        boxes.sortByDescending { it.confidence }
         val resultBoxes = ArrayList<BoundingBox>()
-
-        while (filteredBoxes.isNotEmpty()) {
-            val bestBox = filteredBoxes.removeAt(0)
+        while (boxes.isNotEmpty()) {
+            val bestBox = boxes.removeAt(0)
             resultBoxes.add(bestBox)
-
             val boxesToKeep = ArrayList<BoundingBox>()
-            for (box in filteredBoxes){
+            for (box in boxes){
                 val iou = calculateIoU(bestBox, box)
                 if (iou < iouThreshold){
                     boxesToKeep.add(box)
                 }
             }
-            filteredBoxes.clear()
-            filteredBoxes.addAll(boxesToKeep)
+            boxes.clear()
+            boxes.addAll(boxesToKeep)
         }
-
         return resultBoxes
     }
 
