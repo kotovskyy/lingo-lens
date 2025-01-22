@@ -1,1 +1,2 @@
-# lingo-lens
+# Lingo Lens
+Lingo Lens is an Android application created as my thesis project designed as a "visual translator." It leverages YOLO-based object detection to analyze images, identify objects, and display their names in bounding boxes. Users can click on these boxes to translate the object names into different languages, hear pronunciations, and view additional information, creating a seamless multilingual learning and communication experience.
